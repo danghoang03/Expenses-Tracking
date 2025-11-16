@@ -16,22 +16,20 @@ struct CategoryListView: View {
     @State private var showingAddSheet = false
     
     var body: some View {
-        NavigationStack {
-            List {
-                expenseSection
-                incomeSection
-            }
-            .navigationTitle("Danh mục")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: { showingAddSheet = true }) {
-                        Label("Thêm", systemImage: "plus")
-                    }
+        List {
+            expenseSection
+            incomeSection
+        }
+        .navigationTitle("Danh mục")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: { showingAddSheet = true }) {
+                    Label("Thêm", systemImage: "plus")
                 }
             }
-            .sheet(isPresented: $showingAddSheet) {
-                AddCategoryView()
-            }
+        }
+        .sheet(isPresented: $showingAddSheet) {
+            AddCategoryView()
         }
     }
 }
@@ -91,6 +89,8 @@ extension CategoryListView {
 }
 
 #Preview {
-    CategoryListView()
-        .modelContainer(PreviewContainer.shared)
+    NavigationStack {
+        CategoryListView()
+    }
+    .modelContainer(PreviewContainer.shared)
 }

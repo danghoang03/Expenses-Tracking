@@ -1,0 +1,49 @@
+//
+//  ContentView.swift
+//  Expenses-Tracking
+//
+//  Created by Hoàng Minh Hải Đăng on 14/11/25.
+//
+
+import SwiftUI
+
+struct ContentView: View {
+    let accentColor: Color = .blue
+    
+    var body: some View {
+        TabView {
+            NavigationStack {
+                DashboardView()
+            }
+            .tabItem {
+                Label("Tổng quan", systemImage: "house.fill")
+            }
+            
+            NavigationStack {
+                TransactionListView()
+            }
+            .tabItem {
+                Label("Sổ giao dịch", systemImage: "list.bullet.rectangle.portrait.fill")
+            }
+            
+            NavigationStack {
+                ReportView()
+            }
+            .tabItem {
+                Label("Báo cáo", systemImage: "chart.pie.fill")
+            }
+            
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem {
+                    Label("Cài đặt", systemImage: "gearshape.fill")
+                }
+        }
+        .tint(accentColor)
+    }
+}
+
+#Preview {
+    ContentView()
+}

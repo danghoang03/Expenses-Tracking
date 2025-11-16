@@ -16,26 +16,24 @@ struct WalletListView: View {
     @State private var showingAddSheet = false
     
     var body: some View {
-        NavigationStack {
-            List {
-                if wallets.isEmpty {
-                    emptyState
-                } else {
-                    walletListSection
+        List {
+            if wallets.isEmpty {
+                emptyState
+            } else {
+                walletListSection
+            }
+        }
+        .listStyle(.plain)
+        .navigationTitle("Ví của tôi")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: { showingAddSheet = true }) {
+                    Label("Thêm ví", systemImage: "plus")
                 }
             }
-            .listStyle(.plain)
-            .navigationTitle("Ví của tôi")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: { showingAddSheet = true }) {
-                        Label("Thêm ví", systemImage: "plus")
-                    }
-                }
-            }
-            .sheet(isPresented: $showingAddSheet) {
-                AddWalletView()
-            }
+        }
+        .sheet(isPresented: $showingAddSheet) {
+            AddWalletView()
         }
     }
 }
@@ -72,6 +70,8 @@ extension WalletListView {
 }
 
 #Preview {
-    WalletListView()
-        .modelContainer(PreviewContainer.shared)
+    NavigationStack {
+        WalletListView()
+    }
+    .modelContainer(PreviewContainer.shared)
 }
