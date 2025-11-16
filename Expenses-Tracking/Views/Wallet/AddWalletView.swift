@@ -15,13 +15,9 @@ struct AddWalletView: View {
     @State private var name: String = ""
     @State private var balance: Double = 0
     @State private var selectedColor: Color = . blue
-    @State private var selectedIcon: String = "creditcard"
+    @State private var selectedIcon: String = "creditcard.fill"
     
-    let currencyFormatter: NumberFormatter = {
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .decimal
-            return formatter
-        }()
+    @FocusState private var isAmountFocused: Bool
     
     let walletIcons = ["creditcard.fill", "banknote", "building.columns.fill", "smartphone"]
     
@@ -45,6 +41,9 @@ struct AddWalletView: View {
                     .disabled(name.isEmpty)
                 }
             }
+            .onTapGesture {
+                isAmountFocused = false
+            }
         }
     }
 }
@@ -57,8 +56,9 @@ extension AddWalletView {
             HStack {
                 Text("Số dư")
                 Spacer()
-                TextField("0", value: $balance, formatter: currencyFormatter)
+                TextField("0", value: $balance, format: .currency(code: "VND"))
                     .keyboardType(.decimalPad)
+                    .focused($isAmountFocused)
                     .multilineTextAlignment(.trailing)
             }
         }

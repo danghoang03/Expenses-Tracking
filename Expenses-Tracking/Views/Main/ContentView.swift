@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ContentView: View {
-    let accentColor: Color = .blue
     
     var body: some View {
         TabView {
@@ -40,7 +39,6 @@ struct ContentView: View {
                     Label("Cài đặt", systemImage: "gearshape.fill")
                 }
         }
-        .tint(accentColor)
     }
 }
 

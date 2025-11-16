@@ -15,7 +15,7 @@ struct AddCategoryView: View {
     @State private var name = ""
     @State private var selectedType: TransactionType = .expense
     @State private var selectedColor: Color = .red
-    @State private var selectedIcon: String = "star.fill"
+    @State private var selectedIcon: String = "house.fill"
     
     let sampleIcons = ["house.fill", "fork.knife", "fuelpump.fill", "cart.fill", "heart.fill", "gamecontroller.fill", "book.fill", "briefcase.fill"]
     
