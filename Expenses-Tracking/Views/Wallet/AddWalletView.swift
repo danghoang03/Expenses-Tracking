@@ -29,6 +29,12 @@ struct AddWalletView: View {
             }
             .navigationTitle("Thêm Ví Mới")
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Xong") {
+                        isAmountFocused = false
+                    }
+                }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Huỷ", systemImage: "xmark") {
                         dismiss()
@@ -40,9 +46,6 @@ struct AddWalletView: View {
                     }
                     .disabled(name.isEmpty)
                 }
-            }
-            .onTapGesture {
-                isAmountFocused = false
             }
         }
     }

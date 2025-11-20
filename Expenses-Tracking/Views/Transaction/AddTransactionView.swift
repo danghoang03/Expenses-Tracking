@@ -24,7 +24,7 @@ struct AddTransactionView: View {
     @FocusState private var isAmountFocused: Bool
     
     private var isFormValid: Bool {
-        amount == 0 && selectedWallet != nil && selectedCategory != nil
+        amount != 0 && selectedWallet != nil && selectedCategory != nil
     }
     
     var body: some View {
@@ -36,9 +36,14 @@ struct AddTransactionView: View {
                 walletSection
             }
             .navigationTitle("Giao dịch mới")
-            .onTapGesture { isAmountFocused = false }
             .onAppear(perform: setupDefaults)
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Xong") {
+                        isAmountFocused = false
+                    }
+                }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Huỷ", systemImage: "xmark") {
                         dismiss()
@@ -76,26 +81,41 @@ extension AddTransactionView {
     private var infoSection: some View {
         Section {
             DatePicker("Ngày giao dịch", selection: $selectedDate, displayedComponents: [.date, .hourAndMinute])
+                .foregroundStyle(.primary)
             
             TextField("Ghi chú (VD: Ăn sáng)", text: $note)
         }
     }
     
     private var categorySection: some View {
-        Section("Danh mục") {
+        Section {
             if categories.isEmpty {
-                ContentUnavailableView("Chưa có danh mục", systemImage: "list.bullet.rectangle.portrait", description: Text("Vui lòng tạo danh mục trước."))
+                ContentUnavailableView("Chưa có danh mục", systemImage: "list.bullet.rectangle.portrait", description: Text("Vui lòng tạo danh mục ở phần Cài đặt."))
             } else {
-                Picker("Chọn danh mục", selection: $selectedCategory) {
-                    ForEach(categories) { category in
-                        HStack {
-                            Image(systemName: category.iconSymbol)
-                            Text(category.name)
+                NavigationLink {
+                    CategorySelectionView(categories: categories, selectedCategory: $selectedCategory)
+                } label: {
+                    HStack {
+                        Text("Danh mục")
+                            .foregroundStyle(.primary)
+                        
+                        Spacer()
+                        
+                        if let category = selectedCategory {
+                            HStack {
+                                Image(systemName: category.iconSymbol)
+                                    .foregroundStyle(Color(hex: category.colorHex))
+                                Text(category.name)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } else {
+                            Text("Chọn danh mục")
+                                .foregroundStyle(.secondary)
                         }
-                        .tag(category as Category?)
                     }
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
-                .pickerStyle(.navigationLink)
             }
         }
     }
@@ -103,23 +123,25 @@ extension AddTransactionView {
     private var walletSection: some View {
         Section("Tài khoản / Ví") {
             if wallets.isEmpty {
-                Text("Vui lòng tạo ví trước")
-                    .foregroundStyle(.red)
+                Text("Chưa có ví, vui lòng tạo ví ở phần Cài đặt")
+                    .foregroundStyle(.secondary)
             } else {
-                Picker("Chọn ví", selection: $selectedWallet) {
-                    ForEach(wallets) { wallet in
-                        HStack {
-                            Image(systemName: wallet.iconSymbol)
-                            Text(wallet.name)
-                            Spacer()
-                            Text(wallet.currentBalance.formatted(.currency(code:  "VND")))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(wallets) { wallet in
+                            WalletSelectionCardView(wallet: wallet, isSelected: selectedWallet == wallet)
+                                .onTapGesture {
+                                    withAnimation {
+                                        selectedWallet = wallet
+                                    }
+                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                }
                         }
-                        .tag(wallet as Wallet?)
                     }
+                    .padding(.vertical, 8)
                 }
-                .pickerStyle(.navigationLink)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
             }
         }
     }
