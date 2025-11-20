@@ -30,9 +30,11 @@ struct AddWalletView: View {
             .navigationTitle("Thêm Ví Mới")
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Xong") {
-                        isAmountFocused = false
+                    if isAmountFocused {
+                        Spacer()
+                        Button("Xong") {
+                            isAmountFocused = false
+                        }
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {

@@ -14,6 +14,12 @@ struct CategorySelectionView: View {
     
     var body: some View {
         List {
+            if let transfer = categories.first(where: { $0.type == .transfer }) {
+                Section("Hệ thống") {
+                    categoryRow(for: transfer)
+                }
+            }
+            
             Section("Chi tiêu") {
                 ForEach(categories.filter { $0.type == .expense }) { category in
                     categoryRow(for: category)
