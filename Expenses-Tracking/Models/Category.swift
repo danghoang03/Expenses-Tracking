@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Category {
+final class Category: Equatable {
     var name: String
     var iconSymbol: String
     var colorHex: String
@@ -37,5 +37,9 @@ final class Category {
         set {
             typeRawValue = newValue.rawValue
         }
+    }
+    
+    static func == (lhs: Category, rhs: Category) -> Bool {
+        return lhs.persistentModelID == rhs.persistentModelID
     }
 }
