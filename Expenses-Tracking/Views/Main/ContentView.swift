@@ -27,10 +27,10 @@ struct ContentView: View {
             }
             
             NavigationStack {
-                ReportView()
+                BudgetListView()
             }
             .tabItem {
-                Label("Báo cáo", systemImage: "chart.pie.fill")
+                Label("Ngân sách", systemImage: "chart.bar.fill")
             }
             
             NavigationStack {
