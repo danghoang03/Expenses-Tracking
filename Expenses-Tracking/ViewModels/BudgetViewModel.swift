@@ -33,12 +33,12 @@ class BudgetViewModel {
     @MainActor
     func calculateBudgetProgress(budgets: [Budget], context: ModelContext) {
         let currentMonthStart = Date().startOfMonth
-        let currentMonthEnd = Date().endOfMonth
+        let currentNextMonthStart = Date().startOfNextMonth
         
         let descriptor = FetchDescriptor<Transaction>(
             predicate: #Predicate<Transaction> { transaction in
                 transaction.createdAt >= currentMonthStart &&
-                transaction.createdAt <= currentMonthEnd
+                transaction.createdAt < currentNextMonthStart
             }
         )
         
