@@ -31,24 +31,36 @@ class BudgetViewModel {
     
     // calculate budget progresses base on transactions of current month
     @MainActor
-    func calculateBudgetProgress(budgets: [Budget], transactions: [Transaction]) {
+    func calculateBudgetProgress(budgets: [Budget], context: ModelContext) {
         let currentMonthStart = Date().startOfMonth
         let currentMonthEnd = Date().endOfMonth
         
-        let thisMonthExpenses = transactions.filter { transaction in
-            let inTimeRange = transaction.createdAt >= currentMonthStart && transaction.createdAt <= currentMonthEnd
-            let isExpense = transaction.category?.type == .expense
-            return inTimeRange && isExpense
-        }
+        let descriptor = FetchDescriptor<Transaction>(
+            predicate: #Predicate<Transaction> { transaction in
+                transaction.createdAt >= currentMonthStart &&
+                transaction.createdAt <= currentMonthEnd
+            }
+        )
         
-        self.budgetProgresses = budgets.map { budget in
-            let spentAmount = thisMonthExpenses.filter {
-                $0.category == budget.category
-            }.reduce(0) { $0 + $1.amount }
+        do {
+            let monthTransactions = try context.fetch(descriptor)
             
-            return BudgetProgress(budget: budget, spent: spentAmount)
+            self.budgetProgresses = budgets.compactMap { budget in
+                guard let category = budget.category else { return nil }
+                
+                let spentAmount = monthTransactions.filter { transaction in
+                    transaction.category?.type == .expense &&
+                    transaction.category == category
+                }
+                .reduce(0) { $0 + $1.amount }
+                
+                return BudgetProgress(budget: budget, spent: spentAmount)
+            }
+            .sorted { $0.progress > $1.progress }
+        } catch {
+            print("Error calculating budget: \(error)")
+            self.budgetProgresses = []
         }
-        .sorted{ $0.progress > $1.progress }
     }
     
     func deleteBudget(_ budget: Budget, context: ModelContext) {

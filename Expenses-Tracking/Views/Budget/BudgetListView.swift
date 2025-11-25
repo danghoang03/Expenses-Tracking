@@ -133,7 +133,7 @@ extension BudgetListView {
     }
     
     private func recalculate() {
-        viewModel.calculateBudgetProgress(budgets: budgets, transactions: transactions)
+        viewModel.calculateBudgetProgress(budgets: budgets, context: modelContext)
     }
 }
 
