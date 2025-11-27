@@ -34,6 +34,13 @@ struct ContentView: View {
             }
             
             NavigationStack {
+                ReportView()
+            }
+            .tabItem {
+                Label("Báo cáo", systemImage: "chart.pie.fill")
+            }
+            
+            NavigationStack {
                 SettingsView()
             }
             .tabItem {
