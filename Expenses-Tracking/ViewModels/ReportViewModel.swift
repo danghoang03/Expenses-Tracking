@@ -45,17 +45,6 @@ class ReportViewModel {
     
     var maxAmount: Double { chartData.map(\.amount).max() ?? 0 }
     
-    var selectedChartDate: Date?
-    var selectedChartAmount: Double? {
-        guard let date = selectedChartDate,
-              let item = chartData.first(where: {
-                  Calendar.current.isDate($0.date, inSameDayAs: date) ||
-                  (timeRange == .year && Calendar.current.isDate($0.date, equalTo: date, toGranularity: .month)) ||
-                  (timeRange == .month && Calendar.current.isDate($0.date, equalTo: date, toGranularity: .weekOfYear))
-              }) else { return nil }
-        return item.amount
-    }
-    
     var maxChartAmount: Double {
         chartData.map(\.amount).max() ?? 0
     }

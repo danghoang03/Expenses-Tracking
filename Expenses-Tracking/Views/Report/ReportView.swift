@@ -15,7 +15,11 @@ struct ReportView: View {
     
     @State private var viewModel = ReportViewModel()
     @State private var selectedCategoryName: String?
-    @State private var chartScrollPosition: String = ""
+    @State private var selectedBarDate: Date?
+    
+    private var initialScrollDate: Date {
+        viewModel.chartData.first(where: { $0.isCurrent })?.date ?? Date()
+    }
     
     var body: some View {
         NavigationStack {
@@ -39,12 +43,11 @@ struct ReportView: View {
             }
             .onChange(of: viewModel.timeRange) {
                 viewModel.fetchData(context: modelContext)
-                
-                if viewModel.timeRange == . year {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        scrollToCurrentItem()
-                    }
-                }
+                selectedBarDate = nil
+            }
+            .onDisappear {
+                selectedBarDate = nil
+                viewModel.timeRange = .week
             }
         }
     }
@@ -53,7 +56,7 @@ struct ReportView: View {
 extension ReportView {
     
     private var timeFilterSection: some View {
-        Picker("Thời gian", selection: $viewModel.timeRange) {
+        Picker("Thời gian", selection: $viewModel.timeRange.animation(.easeInOut)) {
             ForEach(ReportViewModel.TimeRange.allCases) { range in
                 Text(range.rawValue).tag(range)
             }
@@ -89,11 +92,15 @@ extension ReportView {
                 .foregroundStyle(.primary)
                 .padding(.horizontal)
             
-            barChartView
-                .padding()
-                .background(Color(uiColor: .secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .padding(.horizontal)
+            if viewModel.totalSpent == 0 {
+                emptyBarChartState
+            } else {
+                barChartView
+                    .padding()
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .padding(.horizontal)
+            }
         }
     }
     
@@ -126,10 +133,30 @@ extension ReportView {
                         AxisValueLabel()
                     }
                 }
-                .chartScrollPosition(x: $chartScrollPosition)
+                .chartYScale(domain: 0...(viewModel.maxChartAmount * 1.2))
+                .chartGesture { proxy in
+                    SpatialTapGesture().onEnded { value in
+                        if let date = proxy.value(atX: value.location.x, as: Date.self) {
+                            selectedBarDate = date
+                        }
+                    }
+                }
+                .chartScrollPosition(initialX: initialScrollDate)
                 .chartScrollableAxes(viewModel.timeRange == .year ? .horizontal : [])
                 .applyChartDomain(isYearMode: viewModel.timeRange == .year)
             }
+    }
+    
+    private var emptyBarChartState: some View {
+        ContentUnavailableView(
+            "Chưa có dữ liệu",
+            systemImage: "chart.bar",
+            description: Text("Hãy thêm giao dịch chi tiêu để xem xu hướng chi tiêu.")
+        )
+        .frame(height: 200)
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal)
     }
     
     @ChartContentBuilder
@@ -139,7 +166,7 @@ extension ReportView {
                 x: .value("Date", item.date, unit: unitForRange),
                 y: .value("Amount", item.amount)
             )
-            .foregroundStyle(item.isCurrent ? .blue : .blue.opacity(0.3))
+            .foregroundStyle(barForegroundStyle(for: item))
             .cornerRadius(4)
             .annotation(position: .top, spacing: 4) {
                 annotationView(for: item)
@@ -163,11 +190,13 @@ extension ReportView {
     
     @ViewBuilder
     private func annotationView(for item: ReportViewModel.ChartData) -> some View {
-        if item.isCurrent && item.amount > 0 {
+        let isSelected = isBarSelected(item)
+        
+        if (item.isCurrent && selectedBarDate == nil && item.amount > 0) || (isSelected && item.amount > 0) {
             Text(shortFormat(item.amount))
                 .font(.caption2)
                 .fontWeight(.bold)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(isSelected ? .primary : .secondary)
         }
     }
     
@@ -188,11 +217,27 @@ extension ReportView {
         return String(format: "%.0f", value)
     }
     
-    private func scrollToCurrentItem() {
-        if let currentItem = viewModel.chartData.first(where: { $0.isCurrent }) {
-            withAnimation {
-                chartScrollPosition = currentItem.label
-            }
+    private func barForegroundStyle(for item: ReportViewModel.ChartData) -> some ShapeStyle {
+        let isSelected = isBarSelected(item)
+        
+        if selectedBarDate != nil {
+            return isSelected ? Color.blue : Color.blue.opacity(0.3)
+        } else {
+            return item.isCurrent ? Color.blue : Color.blue.opacity(0.3)
+        }
+    }
+    
+    private func isBarSelected(_ item: ReportViewModel.ChartData) -> Bool {
+        guard let selectedDate = selectedBarDate else { return false }
+        let calendar = Calendar.current
+        
+        switch viewModel.timeRange {
+        case .week:
+            return calendar.isDate(item.date, inSameDayAs: selectedDate)
+        case .month:
+            return calendar.isDate(item.date, equalTo: selectedDate, toGranularity: .weekOfYear)
+        case .year:
+            return calendar.isDate(item.date, equalTo: selectedDate, toGranularity: .month)
         }
     }
     
@@ -203,7 +248,7 @@ extension ReportView {
                 .padding(.horizontal)
             
             if viewModel.categoryData.isEmpty {
-                emptyChartState
+                emptyDonutChartState
             } else {
                 interactiveDonutChart
                 detailedLegendList
@@ -220,11 +265,15 @@ extension ReportView {
                     angularInset: 1.5
                 )
                 .cornerRadius(6)
-                .foregroundStyle(Color(hex: item.colorHex))
+                .foregroundStyle(by: .value("Category", item.categoryName))
                 .opacity(selectedCategoryName == nil ? 1.0 : (selectedCategoryName == item.categoryName ? 1.0 : 0.3))
             }
             .frame(height: 300)
             .chartLegend(.hidden)
+            .chartForegroundStyleScale(
+                domain: viewModel.categoryData.map(\.categoryName),
+                range: viewModel.categoryData.map { Color(hex: $0.colorHex) }
+            )
             .chartAngleSelection(value: $selectedCategoryName)
             .chartBackground { proxy in
                 GeometryReader { geo in
@@ -345,7 +394,7 @@ extension ReportView {
         .padding(.horizontal)
     }
     
-    private var emptyChartState: some View {
+    private var emptyDonutChartState: some View {
         ContentUnavailableView(
             "Chưa có dữ liệu",
             systemImage: "chart.pie",
