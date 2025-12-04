@@ -23,6 +23,7 @@ struct AddTransactionView: View {
     @State private var selectedWallet: Wallet?
     @State private var selectedCategory: Category?
     @State private var selectedDestinationWallet: Wallet?
+    @State private var showingAlert = false
     
     @FocusState private var isAmountFocused: Bool
     
@@ -55,6 +56,11 @@ struct AddTransactionView: View {
                 } else {
                     setupDefaults()
                 }
+            }
+            .alert("Số dư không đủ", isPresented: $showingAlert) {
+                Button("OK") { }
+            } message: {
+                Text("Số dư của bạn hiện không đủ, vui lòng kiểm tra lại giao dịch.")
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
@@ -224,6 +230,11 @@ extension AddTransactionView {
             return
         }
         
+        if amount > wallet.currentBalance && category.type != .income {
+            showingAlert = true
+            return
+        }
+        
         do {
             try TransactionManager.addTransaction(amount: amount, date: selectedDate, note: note, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
             dismiss()
@@ -234,6 +245,19 @@ extension AddTransactionView {
     
     private func updateTransaction(_ transaction: Transaction) {
         guard let wallet = selectedWallet, let category = selectedCategory else {
+            return
+        }
+        
+        var availableBalance = wallet.currentBalance
+        
+        if let oldWallet = transaction.wallet, oldWallet == wallet {
+            if let oldType = transaction.category?.type, oldType != .income {
+                availableBalance += transaction.amount
+            }
+        }
+        
+        if amount > availableBalance && category.type != .income {
+            showingAlert = true
             return
         }
         
