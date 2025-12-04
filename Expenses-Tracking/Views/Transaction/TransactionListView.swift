@@ -71,9 +71,12 @@ extension TransactionListView {
         List {
             ForEach(viewModel.groupTransactions(transactions), id: \.0) { date, transactionsInDay in
                 Section {
-                    daySectionContent(transactions: transactionsInDay)
-                } header: {
                     headerView(for: date, transactions: transactionsInDay)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .disabled(true)
+                    
+                    daySectionContent(transactions: transactionsInDay)
                 }
             }
         }
