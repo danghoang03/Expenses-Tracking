@@ -11,6 +11,8 @@ struct WalletSelectionCardView: View {
     let wallet: Wallet
     let isSelected: Bool
     
+    var customBalance: Double? = nil
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -32,7 +34,7 @@ struct WalletSelectionCardView: View {
                 .fontWeight(.medium)
                 .lineLimit(1)
             
-            Text(wallet.currentBalance.formatted(.currency(code: "VND")))
+            Text((customBalance ?? wallet.currentBalance).formatted(.currency(code: "VND")))
                 .font(.caption2)
                 .opacity(0.8)
                 

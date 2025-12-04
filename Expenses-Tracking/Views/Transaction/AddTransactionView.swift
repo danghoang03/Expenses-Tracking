@@ -45,14 +45,7 @@ struct AddTransactionView: View {
             .navigationTitle(transactionToEdit == nil ? "Giao dịch mới" : "Sửa giao dịch")
             .onAppear {
                 if let transaction = transactionToEdit {
-                    amount = transaction.amount
-                    selectedDate = transaction.createdAt
-                    note = transaction.note ?? ""
-                    selectedWallet = transaction.wallet
-                    selectedCategory = transaction.category
-                    if selectedCategory?.type == .transfer {
-                        selectedDestinationWallet = transaction.destinationWallet
-                    }
+                    setupUpdateView(transaction)
                 } else {
                     setupDefaults()
                 }
@@ -170,7 +163,11 @@ extension AddTransactionView {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(wallets) { wallet in
-                                WalletSelectionCardView(wallet: wallet, isSelected: selectedWallet == wallet)
+                                WalletSelectionCardView(
+                                    wallet: wallet,
+                                    isSelected: selectedWallet == wallet,
+                                    customBalance: getDisplayBalance(for: wallet)
+                                )
                                     .onTapGesture {
                                         withAnimation {
                                             selectedWallet = wallet
@@ -195,9 +192,14 @@ extension AddTransactionView {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
                                     ForEach(wallets.filter { $0 != selectedWallet }) { wallet in
-                                        WalletSelectionCardView(wallet: wallet, isSelected: selectedDestinationWallet == wallet)
+                                        WalletSelectionCardView(
+                                            wallet: wallet,
+                                            isSelected: selectedDestinationWallet == wallet,
+                                            customBalance: getDisplayBalance(for: wallet)
+                                        )
                                             .onTapGesture {
-                                                withAnimation { selectedDestinationWallet = wallet
+                                                withAnimation {
+                                                    selectedDestinationWallet = wallet
                                                 }
                                                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                             }
@@ -222,6 +224,17 @@ extension AddTransactionView {
         
         if selectedCategory == nil {
             selectedCategory = categories.first
+        }
+    }
+    
+    private func setupUpdateView(_ transaction: Transaction) {
+        amount = transaction.amount
+        selectedDate = transaction.createdAt
+        note = transaction.note ?? ""
+        selectedWallet = transaction.wallet
+        selectedCategory = transaction.category
+        if selectedCategory?.type == .transfer {
+            selectedDestinationWallet = transaction.destinationWallet
         }
     }
     
@@ -269,6 +282,33 @@ extension AddTransactionView {
         } catch {
             print("Error updating transaction: \(error)")
         }
+    }
+    
+    private func getDisplayBalance(for wallet: Wallet) -> Double? {
+        var balance = wallet.currentBalance
+        
+        guard let transaction = transactionToEdit else {
+            return balance
+        }
+        
+        if let oldWallet = transaction.wallet, oldWallet == wallet {
+            if let type = transaction.category?.type {
+                switch type {
+                case .expense, .transfer:
+                    balance += transaction.amount
+                case .income:
+                    balance -= transaction.amount
+                }
+            }
+        }
+        
+        if let destWallet = transaction.destinationWallet,
+            destWallet == wallet,
+           transaction.category?.type == .transfer {
+            balance -= transaction.amount
+        }
+        
+        return balance
     }
 }
 
