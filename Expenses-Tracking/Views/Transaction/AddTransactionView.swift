@@ -15,6 +15,8 @@ struct AddTransactionView: View {
     @Query(sort: \Wallet.name) private var wallets: [Wallet]
     @Query(sort: \Category.name) private var categories: [Category]
     
+    var transactionToEdit: Transaction?
+    
     @State private var amount: Double = 0
     @State private var selectedDate: Date = Date()
     @State private var note: String = ""
@@ -39,8 +41,21 @@ struct AddTransactionView: View {
                 categorySection
                 walletSection
             }
-            .navigationTitle("Giao dịch mới")
-            .onAppear(perform: setupDefaults)
+            .navigationTitle(transactionToEdit == nil ? "Giao dịch mới" : "Sửa giao dịch")
+            .onAppear {
+                if let transaction = transactionToEdit {
+                    amount = transaction.amount
+                    selectedDate = transaction.createdAt
+                    note = transaction.note ?? ""
+                    selectedWallet = transaction.wallet
+                    selectedCategory = transaction.category
+                    if selectedCategory?.type == .transfer {
+                        selectedDestinationWallet = transaction.destinationWallet
+                    }
+                } else {
+                    setupDefaults()
+                }
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     if isAmountFocused {
@@ -56,7 +71,13 @@ struct AddTransactionView: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Lưu") { saveTransaction() }
+                    Button("Lưu") {
+                        if let transaction = transactionToEdit {
+                            updateTransaction(transaction)
+                        } else {
+                            saveTransaction()
+                        }
+                    }
                         .disabled(!isFormValid)
                 }
             }
@@ -208,6 +229,21 @@ extension AddTransactionView {
             dismiss()
         } catch {
             print("Error saving transaction: \(error)")
+        }
+    }
+    
+    private func updateTransaction(_ transaction: Transaction) {
+        guard let wallet = selectedWallet, let category = selectedCategory else {
+            return
+        }
+        
+        TransactionManager.deleteTransaction(transaction, context: modelContext)
+        
+        do {
+            try TransactionManager.addTransaction(amount: amount, date: selectedDate, note: note, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
+            dismiss()
+        } catch {
+            print("Error updating transaction: \(error)")
         }
     }
 }

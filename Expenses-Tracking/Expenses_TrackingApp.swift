@@ -40,11 +40,10 @@ struct Expenses_TrackingApp: App {
                 let transferCategory = Category(
                     name: "Chuyển khoản",
                     iconSymbol: "arrow.left.arrow.right",
-                    colorHex: "#3498DB", // Màu xanh dương
+                    colorHex: "#3498DB",
                     type: .transfer
                 )
                 context.insert(transferCategory)
-                print("Seeded 'Transfer' category.")
             }
         } catch {
             print("Error seeding data: \(error)")

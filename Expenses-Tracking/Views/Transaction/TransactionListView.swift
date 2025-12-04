@@ -15,6 +15,7 @@ struct TransactionListView: View {
     
     @State private var viewModel = TransactionListViewModel()
     @State private var showingAddTransaction = false
+    @State private var transactionToEdit: Transaction?
     
     
     var body: some View {
@@ -40,6 +41,9 @@ struct TransactionListView: View {
         }
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
+        }
+        .sheet(item: $transactionToEdit) { transaction in
+            AddTransactionView(transactionToEdit: transaction)
         }
     }
 }
@@ -85,6 +89,7 @@ extension TransactionListView {
             }
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 deleteButton(for: transaction)
+                updateButton(for: transaction)
             }
         }
     }
@@ -97,6 +102,15 @@ extension TransactionListView {
         } label: {
             Label("Xoá", systemImage: "trash")
         }
+    }
+    
+    private func updateButton(for transaction: Transaction) -> some View {
+        Button {
+            transactionToEdit = transaction
+        } label: {
+            Label("Sửa", systemImage: "pencil")
+        }
+        .tint(.green)
     }
     
     private func headerView(for date: Date, transactions: [Transaction]) -> some View {
