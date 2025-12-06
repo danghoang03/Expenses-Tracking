@@ -17,7 +17,8 @@ struct AddTransactionView: View {
     
     var transactionToEdit: Transaction?
     
-    @State private var amount: Double = 0
+    @State private var currencyViewModel = CurrencyViewModel()
+    
     @State private var selectedDate: Date = Date()
     @State private var note: String = ""
     @State private var selectedWallet: Wallet?
@@ -29,15 +30,15 @@ struct AddTransactionView: View {
     
     private var isFormValid: Bool {
         if selectedCategory?.type == .transfer {
-            return amount > 0 && selectedWallet != nil && selectedCategory != nil && selectedDestinationWallet != nil && selectedWallet != selectedDestinationWallet
+            return currencyViewModel.finalVNDAmount > 0 && selectedWallet != nil && selectedCategory != nil && selectedDestinationWallet != nil && selectedWallet != selectedDestinationWallet
         }
-        return amount != 0 && selectedWallet != nil && selectedCategory != nil
+        return currencyViewModel.finalVNDAmount != 0 && selectedWallet != nil && selectedCategory != nil
     }
     
     var body: some View {
         NavigationStack {
             Form {
-                amountSection
+                CurrencyInputSection(viewModel: currencyViewModel)
                 infoSection
                 categorySection
                 walletSection
@@ -85,25 +86,6 @@ struct AddTransactionView: View {
 }
 
 extension AddTransactionView {
-    private var amountSection: some View {
-        Section {
-            HStack {
-                Text(selectedCategory?.type == .income ? "+" : "-")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundStyle(selectedCategory?.type == .income ? .green : .red)
-                
-                TextField("0", value: $amount, format: .currency(code: "VND"))
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .keyboardType(.decimalPad)
-                    .focused($isAmountFocused)
-                    .multilineTextAlignment(.trailing)
-            }
-            .padding(.vertical, 8)
-        }
-    }
-    
     private var infoSection: some View {
         Section {
             DatePicker("Ngày giao dịch", selection: $selectedDate, displayedComponents: [.date, .hourAndMinute])
@@ -228,7 +210,7 @@ extension AddTransactionView {
     }
     
     private func setupUpdateView(_ transaction: Transaction) {
-        amount = transaction.amount
+        currencyViewModel.foreignAmount = transaction.amount
         selectedDate = transaction.createdAt
         note = transaction.note ?? ""
         selectedWallet = transaction.wallet
@@ -243,13 +225,21 @@ extension AddTransactionView {
             return
         }
         
-        if amount > wallet.currentBalance && category.type != .income {
+        let finalAmount = currencyViewModel.finalVNDAmount
+        
+        if finalAmount > wallet.currentBalance && category.type != .income {
             showingAlert = true
             return
         }
         
+        var finalNote = note != "" ? note : category.name
+        if currencyViewModel.selectedCurrency != .vnd {
+            let currencyInfo = "\n [\(currencyViewModel.foreignAmount.formatted()) \(currencyViewModel.selectedCurrency.id) - Rate: \(currencyViewModel.exchangeRate.formatted())]"
+            finalNote += currencyInfo
+        }
+        
         do {
-            try TransactionManager.addTransaction(amount: amount, date: selectedDate, note: note, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
+            try TransactionManager.addTransaction(amount: finalAmount, date: selectedDate, note: finalNote, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
             dismiss()
         } catch {
             print("Error saving transaction: \(error)")
@@ -261,6 +251,7 @@ extension AddTransactionView {
             return
         }
         
+        let finalAmount = currencyViewModel.finalVNDAmount
         var availableBalance = wallet.currentBalance
         
         if let oldWallet = transaction.wallet, oldWallet == wallet {
@@ -269,7 +260,7 @@ extension AddTransactionView {
             }
         }
         
-        if amount > availableBalance && category.type != .income {
+        if finalAmount > availableBalance && category.type != .income {
             showingAlert = true
             return
         }
@@ -277,7 +268,7 @@ extension AddTransactionView {
         TransactionManager.deleteTransaction(transaction, context: modelContext)
         
         do {
-            try TransactionManager.addTransaction(amount: amount, date: selectedDate, note: note, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
+            try TransactionManager.addTransaction(amount: finalAmount, date: selectedDate, note: note, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
             dismiss()
         } catch {
             print("Error updating transaction: \(error)")
