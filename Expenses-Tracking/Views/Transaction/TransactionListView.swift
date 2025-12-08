@@ -16,6 +16,7 @@ struct TransactionListView: View {
     @State private var viewModel = TransactionListViewModel()
     @State private var showingAddTransaction = false
     @State private var transactionToEdit: Transaction?
+    @State private var showSuccessToast = false
     
     
     var body: some View {
@@ -23,6 +24,8 @@ struct TransactionListView: View {
             Group {
                 if transactions.isEmpty {
                     emptyView
+                } else if viewModel.groupTransactions(transactions).isEmpty {
+                    noResultView
                 } else {
                     transactionList
                 }
@@ -33,26 +36,41 @@ struct TransactionListView: View {
                 .padding(.bottom, 10)
         }
         .navigationTitle("Sổ giao dịch")
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Tìm kiếm...")
-        .overlay {
-            if showingEmptySearch {
-                emptySearchView
+        .overlay(alignment: .bottom) {
+            if showSuccessToast {
+                successToastView
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .padding(.bottom, 20)
+                    .zIndex(100)
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    TransactionFilterView(viewModel: viewModel)
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                        .symbolVariant(viewModel.activeFilter.isActive ? .fill : .none)
+                        .foregroundStyle(viewModel.activeFilter.isActive ? .blue : .primary)
+                }
+            }
+        }
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Tìm kiếm...")
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
         }
         .sheet(item: $transactionToEdit) { transaction in
             AddTransactionView(transactionToEdit: transaction)
         }
+        .onChange(of: viewModel.activeFilter) { _, newValue in
+            if newValue.isActive {
+                showToast()
+            }
+        }
     }
 }
 
 extension TransactionListView {
-    private var showingEmptySearch: Bool {
-        return !transactions.isEmpty && !viewModel.searchText.isEmpty && viewModel.groupTransactions(transactions).isEmpty
-    }
-    
     private var emptyView: some View {
         ContentUnavailableView{
             Label("Chưa có giao dịch", systemImage: "doc.text.magnifyingglass")
@@ -67,8 +85,48 @@ extension TransactionListView {
         }
     }
     
+    private var noResultView: some View {
+        ContentUnavailableView {
+            Label("Không tìm thấy kết quả", systemImage: "magnifyingglass")
+        } description: {
+            if viewModel.activeFilter.isActive {
+                Text("Thử thay đổi hoặc xóa bộ lọc để xem thêm kết quả.")
+            } else {
+                Text("Không tìm thấy kết quả cho từ khóa '\(viewModel.searchText)'")
+            }
+        } actions: {
+            if viewModel.activeFilter.isActive {
+                Button("Xoá bộ lọc") {
+                    withAnimation {
+                        viewModel.clearFilter()
+                    }
+                }
+            }
+        }
+    }
+    
     private var transactionList: some View {
         List {
+            if viewModel.activeFilter.isActive {
+                Section {
+                    HStack {
+                        Text("Đang lọc kết quả")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        
+                        Spacer()
+                        
+                        Button("Xoá") {
+                            withAnimation {
+                                viewModel.clearFilter()
+                            }
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                    }
+                }
+            }
+            
             ForEach(viewModel.groupTransactions(transactions), id: \.0) { date, transactionsInDay in
                 Section {
                     headerView(for: date, transactions: transactionsInDay)
@@ -152,6 +210,39 @@ extension TransactionListView {
                 .background(Color.primary)
                 .clipShape(Circle())
                 .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 4)
+        }
+    }
+    
+    private var successToastView: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.title3)
+            
+            Text("Đã áp dụng bộ lọc")
+                .font(.subheadline)
+                .fontWeight(.medium)
+            
+            Spacer()
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
+        .background(Color.green)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
+        .padding(.horizontal, 16)
+    }
+    
+    private func showToast() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            showSuccessToast = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation(.easeInOut) {
+                showSuccessToast = false
+            }
         }
     }
 }

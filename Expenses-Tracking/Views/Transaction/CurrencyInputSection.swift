@@ -100,7 +100,7 @@ extension CurrencyInputSection {
                     Spacer()
                     
                     if viewModel.isManualRate {
-                        TextField("Nhập tỷ giá", value: $viewModel.exchangeRate, format: .number)
+                        TextField("0", value: $viewModel.exchangeRate, format: .number)
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .frame(width: 80)
