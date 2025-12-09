@@ -197,7 +197,7 @@ extension TransactionFilterView {
                         .foregroundStyle(.red)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
-                        .background(Color(uiColor: .systemBackground))
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
@@ -225,21 +225,21 @@ extension TransactionFilterView {
             .padding(.horizontal)
             .padding(.top, 12)
             .padding(.bottom, 8)
-            .background(Color(uiColor: .systemBackground))
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
         }
     }
     
     private func filterButton(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline)
+                .font(.system(size: 14))
                 .fontWeight(isSelected ? .semibold : .regular)
                 .foregroundStyle(.primary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
-                .padding()
+                .padding(.horizontal, 4)
+                .padding(.vertical, 16)
                 .frame(maxWidth: .infinity)
-                .background(isSelected ? Color.pink.opacity(0.05) : Color.white)
+                .background(isSelected ? Color.blue.opacity(0.1) : Color(uiColor: .secondarySystemGroupedBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
