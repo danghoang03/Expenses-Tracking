@@ -14,12 +14,17 @@ struct AddBudgetView: View {
     
     @Query(filter: #Predicate<Category> { $0.typeRawValue == "Expense"}, sort: \Category.name) private var categories: [Category]
     
+    var budgetToEdit: Budget?
+    
     @State private var amount: Double = 0
     @State private var selectedCategory: Category?
+    @State private var isDataLoaded = false
     @FocusState private var isAmountFocused: Bool
     
     private var availableCategories: [Category] {
-        categories.filter { $0.budget == nil }
+        categories.filter {
+            $0.budget == nil || (budgetToEdit != nil && $0 == budgetToEdit?.category)
+        }
     }
     
     var body: some View {
@@ -31,7 +36,10 @@ struct AddBudgetView: View {
                     inputView
                 }
             }
-            .navigationTitle("Tạo ngân sách")
+            .navigationTitle(budgetToEdit == nil ? "Tạo ngân sách" : "Sửa ngân sách")
+            .onAppear {
+                loadData()
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
@@ -41,7 +49,13 @@ struct AddBudgetView: View {
                     Button("Huỷ", systemImage: "xmark") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Lưu") { saveBudget() }
+                    Button("Lưu") {
+                        if let budget = budgetToEdit {
+                            updateBudget(budget)
+                        } else {
+                            saveBudget()
+                        }
+                    }
                         .disabled(amount <= 0 ||  selectedCategory == nil)
                 }
             }
@@ -105,6 +119,27 @@ extension AddBudgetView {
         let newBudget = Budget(limit: amount, category: category)
         modelContext.insert(newBudget)
         dismiss()
+    }
+    
+    private func updateBudget(_ budget: Budget) {
+        budget.limit = amount
+        
+        if let newCategory = selectedCategory, budget.category != newCategory{
+            budget.category = newCategory
+        }
+        
+        dismiss()
+    }
+    
+    private func loadData() {
+        guard !isDataLoaded else { return }
+        
+        if let budget = budgetToEdit {
+            amount = budget.limit
+            selectedCategory = budget.category
+        }
+        
+        isDataLoaded = true
     }
 }
 

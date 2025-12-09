@@ -16,6 +16,7 @@ struct BudgetListView: View {
     
     @State private var viewModel = BudgetViewModel()
     @State private var showingAddBudget = false
+    @State private var budgetToEdit: Budget?
     
     
     var body: some View {
@@ -35,6 +36,9 @@ struct BudgetListView: View {
             }
             .sheet(isPresented: $showingAddBudget) {
                 AddBudgetView()
+            }
+            .sheet(item: $budgetToEdit, onDismiss: { recalculate() }) { budget in
+                AddBudgetView(budgetToEdit: budget)
             }
             .onAppear { recalculate() }
             .onChange(of: transactions) { _, _ in recalculate()}
@@ -105,6 +109,7 @@ extension BudgetListView {
             .padding(.vertical, 8)
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 deleteButton(for: item.budget)
+                updateButton(for: item.budget)
             }
         }
     }
@@ -130,6 +135,15 @@ extension BudgetListView {
             let budget = viewModel.budgetProgresses[index].budget
             modelContext.delete(budget)
         }
+    }
+    
+    private func updateButton(for budget: Budget) -> some View {
+        Button {
+            budgetToEdit = budget
+        } label: {
+            Label("Sửa", systemImage: "pencil")
+        }
+        .tint(.green)
     }
     
     private func recalculate() {
