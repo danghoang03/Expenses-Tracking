@@ -17,6 +17,8 @@ struct TransactionListView: View {
     @State private var showingAddTransaction = false
     @State private var transactionToEdit: Transaction?
     @State private var showSuccessToast = false
+    @State private var showingDeleteAlert = false
+    @State private var transactionToDelete: Transaction?
     
     
     var body: some View {
@@ -61,6 +63,20 @@ struct TransactionListView: View {
         }
         .sheet(item: $transactionToEdit) { transaction in
             AddTransactionView(transactionToEdit: transaction)
+        }
+        .alert("Xóa giao dịch", isPresented: $showingDeleteAlert) {
+            Button("Hủy", role: .cancel) {
+                transactionToDelete = nil
+            }
+            Button("Xóa", role: .destructive) {
+                if let transaction = transactionToDelete {
+                    withAnimation {
+                        viewModel.deleteTransaction(transaction, context: modelContext)
+                    }
+                }
+            }
+        } message: {
+                Text("Bạn có chắc chắn muốn xóa giao dịch này không?")
         }
         .onChange(of: viewModel.activeFilter) { _, newValue in
             if newValue.isActive {
@@ -107,26 +123,6 @@ extension TransactionListView {
     
     private var transactionList: some View {
         List {
-            if viewModel.activeFilter.isActive {
-                Section {
-                    HStack {
-                        Text("Đang lọc kết quả")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        
-                        Spacer()
-                        
-                        Button("Xoá") {
-                            withAnimation {
-                                viewModel.clearFilter()
-                            }
-                        }
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                    }
-                }
-            }
-            
             ForEach(viewModel.groupTransactions(transactions), id: \.0) { date, transactionsInDay in
                 Section {
                     headerView(for: date, transactions: transactionsInDay)
@@ -144,7 +140,7 @@ extension TransactionListView {
     private func daySectionContent(transactions: [Transaction]) -> some View {
         ForEach(transactions) { transaction in
             NavigationLink {
-                Text("Chi tiết giao dịch, View này đang trong quá trình phát triển")
+                TransactionDetailView(transaction: transaction)
             } label: {
                 TransactionRowView(transaction: transaction)
             }
@@ -157,9 +153,8 @@ extension TransactionListView {
     
     private func deleteButton(for transaction: Transaction) -> some View {
         Button(role: .destructive) {
-            withAnimation {
-                viewModel.deleteTransaction(transaction, context: modelContext)
-            }
+            transactionToDelete = transaction
+            showingDeleteAlert = true
         } label: {
             Label("Xoá", systemImage: "trash")
         }
