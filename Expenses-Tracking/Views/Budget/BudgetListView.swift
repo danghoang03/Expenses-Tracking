@@ -40,6 +40,9 @@ struct BudgetListView: View {
             .sheet(item: $budgetToEdit, onDismiss: { recalculate() }) { budget in
                 AddBudgetView(budgetToEdit: budget)
             }
+            .navigationDestination(for: Budget.self) { budget in
+                BudgetDetailView(budget: budget)
+            }
             .onAppear { recalculate() }
             .onChange(of: transactions) { _, _ in recalculate()}
             .onChange(of: budgets) {_, _ in recalculate()}
@@ -62,51 +65,58 @@ extension BudgetListView {
     
     private var budgetList: some View {
         ForEach(viewModel.budgetProgresses) { item in
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Label {
-                        Text(item.budget.category?.name ?? "N/A")
-                            .fontWeight(.semibold)
-                    } icon: {
-                        Image(systemName: item.budget.category?.iconSymbol ?? "circle")
-                            .foregroundStyle(Color(hex: item.budget.category?.colorHex ?? "#808080"))
-                    }
-                    
-                    Spacer()
-                    
-                    Text(item.budget.limit.formatted(.currency(code: "VND")))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            ZStack {
+                NavigationLink(value: item.budget) {
+                    EmptyView()
                 }
+                .opacity(0)
                 
-                //Progress Bar
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(Color(uiColor: .systemGray5))
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Label {
+                            Text(item.budget.category?.name ?? "N/A")
+                                .fontWeight(.semibold)
+                        } icon: {
+                            Image(systemName: item.budget.category?.iconSymbol ?? "circle")
+                                .foregroundStyle(Color(hex: item.budget.category?.colorHex ?? "#808080"))
+                        }
                         
-                        Capsule()
-                            .fill(progressBarColor(for: item))
-                            .frame(width: min(geometry.size.width * item.progress, geometry.size.width))
+                        Spacer()
+                        
+                        Text(item.budget.limit.formatted(.currency(code: "VND")))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    //Progress Bar
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            Capsule()
+                                .fill(Color(uiColor: .systemGray5))
+                            
+                            Capsule()
+                                .fill(progressBarColor(for: item))
+                                .frame(width: min(geometry.size.width * item.progress, geometry.size.width))
+                        }
+                    }
+                    .frame(height: 12)
+                    .padding(.vertical)
+                    
+                    HStack {
+                        Text("Đã chi: \(item.spent.formatted(.currency(code: "VND")))")
+                            .font(.caption)
+                            .foregroundStyle(item.isOverBudget ? .red : .secondary)
+                        
+                        Spacer()
+                        
+                        Text("\(Int(item.progress * 100))%")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundStyle(progressBarColor(for: item))
                     }
                 }
-                .frame(height: 12)
-                .padding(.vertical)
-                
-                HStack {
-                    Text("Đã chi: \(item.spent.formatted(.currency(code: "VND")))")
-                        .font(.caption)
-                        .foregroundStyle(item.isOverBudget ? .red : .secondary)
-                    
-                    Spacer()
-                    
-                    Text("\(Int(item.progress * 100))%")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundStyle(progressBarColor(for: item))
-                }
+                .padding(.vertical, 8)
             }
-            .padding(.vertical, 8)
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 deleteButton(for: item.budget)
                 updateButton(for: item.budget)
