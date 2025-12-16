@@ -7,6 +7,7 @@
 
 import Observation
 import SwiftUI
+import UserNotifications
 
 @Observable
 class SettingsViewModel {
@@ -30,4 +31,63 @@ class SettingsViewModel {
     }
     
     var menuItems: [Route] = Route.allCases
+    
+    var isReminderEnabled: Bool {
+        didSet {
+            handleToggleChange()
+        }
+    }
+    
+    var reminderTime: Date {
+        didSet {
+            if isReminderEnabled {
+                saveSettings()
+                NotificationManager.shared.scheduleDailyReminder(at: reminderTime)
+            }
+        }
+    }
+    
+    var showPermissionAlert: Bool = false
+    
+    init() {
+        self.isReminderEnabled = UserDefaults.standard.bool(forKey: "isReminderEnabled")
+        if let savedDate = UserDefaults.standard.object(forKey: "reminderTime") as? Date {
+            self.reminderTime = savedDate
+        } else {
+            var components = DateComponents()
+            components.hour = 20
+            components.minute = 0
+            self.reminderTime = Calendar.current.date(from: components) ?? Date()
+        }
+    }
+    
+    private func handleToggleChange() {
+        saveSettings()
+        
+        if isReminderEnabled {
+            Task {
+                let granted = await NotificationManager.shared.requestAuthorization()
+                
+                if granted {
+                    NotificationManager.shared.scheduleDailyReminder(at: reminderTime)
+                } else {
+                    self.isReminderEnabled = false
+                    self.showPermissionAlert = true
+                }
+            }
+        } else {
+            NotificationManager.shared.cancelNotifications()
+        }
+    }
+    
+    private func saveSettings() {
+        UserDefaults.standard.set(isReminderEnabled, forKey: "isReminderEnabled")
+        UserDefaults.standard.set(reminderTime, forKey: "reminderTime")
+    }
+    
+    func openSystemSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
+        }
+    }
 }

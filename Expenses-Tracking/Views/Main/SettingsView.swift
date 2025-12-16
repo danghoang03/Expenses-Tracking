@@ -26,6 +26,21 @@ struct SettingsView: View {
                 }
             }
             
+            Section("Thông báo") {
+                Toggle(isOn: $viewModel.isReminderEnabled) {
+                    Label("Nhắc nhở hàng ngày", systemImage:  "bell.fill")
+                        .tint(.blue)
+                }
+                
+                if viewModel.isReminderEnabled {
+                    DatePicker(selection: $viewModel.reminderTime, displayedComponents: .hourAndMinute) {
+                        Label("Thời gian", systemImage: "clock")
+                    }
+                    .datePickerStyle(.compact)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+            
             Section("Dữ liệu & Sao lưu") {
                 Button {
                     exportData()
@@ -66,6 +81,15 @@ struct SettingsView: View {
                 ShareSheet(items: [url])
             }
         }
+        .alert("Cấp quyền thông báo", isPresented: $viewModel.showPermissionAlert) {
+            Button("Hủy", role: .cancel) { }
+            Button("Cài đặt") {
+                viewModel.openSystemSettings()
+            }
+        } message: {
+            Text("Ứng dụng cần quyền thông báo để nhắc nhở bạn. Vui lòng bật trong Cài đặt.")
+        }
+        .animation(.default, value: viewModel.isReminderEnabled)
     }
 }
 
