@@ -41,9 +41,10 @@ struct TransactionFilterView: View {
         .navigationTitle("Bộ lọc")
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(uiColor: .systemGroupedBackground))
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom) {
             bottomActionButtons
         }
+        .toolbar(.hidden, for: .tabBar)
         .animation(.default, value: draftFilter.selectedType)
     }
 }

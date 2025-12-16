@@ -19,7 +19,7 @@ struct DashboardView: View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
                 VStack(spacing: 24) {
-                    totalBalanceSection
+                    overviewSection
                     walletScrollSection
                     recentTransactionSection
                 }
@@ -52,19 +52,98 @@ struct DashboardView: View {
 }
 
 extension DashboardView {
-    private var totalBalanceSection: some View {
-        VStack(spacing: 8) {
-            Text("Tổng tài sản")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            
-            Text(viewModel.totalBalance.formatted(.currency(code: "VND")))
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-                .contentTransition(.numericText())
+    private var overviewSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Tổng tài sản")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.9))
+
+                    Text(viewModel.totalBalance.formatted(.currency(code: "VND")))
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
+
+                Spacer()
+
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .padding(10)
+                    .background(.white.opacity(0.16), in: Circle())
+            }
+
+            HStack(spacing: 12) {
+                overviewMetric(
+                    title: "Thu nhập tháng này",
+                    value: viewModel.currentMonthIncome,
+                    systemImage: "arrow.down.left",
+                    tint: .green
+                )
+
+                overviewMetric(
+                    title: "Chi tiêu tháng này",
+                    value: viewModel.currentMonthExpense,
+                    systemImage: "arrow.up.right",
+                    tint: .red
+                )
+            }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical)
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(LinearGradient(
+                    colors: [
+                        Color(uiColor: .systemBlue),
+                        Color(uiColor: .systemIndigo)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ))
+                .shadow(color: .black.opacity(0.18), radius: 18, x: 0, y: 10)
+        }
+        .padding(.horizontal)
+        .padding(.top)
     }
+
+    private func overviewMetric(title: String, value: Double, systemImage: String, tint: Color) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(tint)
+                .frame(width: 28, height: 28)
+                .background(.white.opacity(0.2), in: Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.85))
+
+                Text(value.formatted(.currency(code: "VND")))
+                    .font(.system(size: 13))
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .monospacedDigit()
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 10)
+        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(.white.opacity(0.14), lineWidth: 1)
+        }
+    }
+
     
     private var walletScrollSection: some View {
         VStack(alignment: .leading) {
