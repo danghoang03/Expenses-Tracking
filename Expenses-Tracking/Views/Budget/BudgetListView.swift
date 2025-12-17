@@ -18,9 +18,10 @@ struct BudgetListView: View {
     @State private var showingAddBudget = false
     @State private var budgetToEdit: Budget?
     
+    @Binding var path: NavigationPath
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
                 if budgets.isEmpty {
                     emptyView
@@ -162,6 +163,6 @@ extension BudgetListView {
 }
 
 #Preview {
-    BudgetListView()
+    BudgetListView(path: .constant(NavigationPath()))
         .modelContainer(PreviewContainer.shared)
 }

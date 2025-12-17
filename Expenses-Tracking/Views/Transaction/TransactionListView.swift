@@ -8,6 +8,11 @@
 import SwiftUI
 import SwiftData
 
+enum TransactionRoute: Hashable {
+    case filter
+    case detail(Transaction)
+}
+
 struct TransactionListView: View {
     @Environment(\.modelContext) private var modelContext
     
@@ -20,67 +25,76 @@ struct TransactionListView: View {
     @State private var showingDeleteAlert = false
     @State private var transactionToDelete: Transaction?
     
+    @Binding var path: NavigationPath
     
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Group {
-                if transactions.isEmpty {
-                    emptyView
-                } else if viewModel.groupTransactions(transactions).isEmpty {
-                    noResultView
-                } else {
-                    transactionList
+        NavigationStack(path: $path) {
+            ZStack(alignment: .bottomTrailing) {
+                Group {
+                    if transactions.isEmpty {
+                        emptyView
+                    } else if viewModel.groupTransactions(transactions).isEmpty {
+                        noResultView
+                    } else {
+                        transactionList
+                    }
+                }
+                
+                addTransactionButton
+                    .padding(.trailing, 30)
+                    .padding(.bottom, 10)
+            }
+            .navigationTitle("Sổ giao dịch")
+            .overlay(alignment: .bottom) {
+                if showSuccessToast {
+                    successToastView
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .padding(.bottom, 20)
+                        .zIndex(100)
                 }
             }
-            
-            addTransactionButton
-                .padding(.trailing, 30)
-                .padding(.bottom, 10)
-        }
-        .navigationTitle("Sổ giao dịch")
-        .overlay(alignment: .bottom) {
-            if showSuccessToast {
-                successToastView
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .padding(.bottom, 20)
-                    .zIndex(100)
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    TransactionFilterView(viewModel: viewModel)
-                } label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                        .symbolVariant(viewModel.activeFilter.isActive ? .fill : .none)
-                        .foregroundStyle(viewModel.activeFilter.isActive ? .blue : .primary)
-                }
-            }
-        }
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Tìm kiếm...")
-        .sheet(isPresented: $showingAddTransaction) {
-            AddTransactionView()
-        }
-        .sheet(item: $transactionToEdit) { transaction in
-            AddTransactionView(transactionToEdit: transaction)
-        }
-        .alert("Xóa giao dịch", isPresented: $showingDeleteAlert) {
-            Button("Hủy", role: .cancel) {
-                transactionToDelete = nil
-            }
-            Button("Xóa", role: .destructive) {
-                if let transaction = transactionToDelete {
-                    withAnimation {
-                        viewModel.deleteTransaction(transaction, context: modelContext)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(value: TransactionRoute.filter) {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .symbolVariant(viewModel.activeFilter.isActive ? .fill : .none)
+                            .foregroundStyle(viewModel.activeFilter.isActive ? .blue : .primary)
                     }
                 }
             }
-        } message: {
+            .navigationDestination(for: TransactionRoute.self) { route in
+                switch route {
+                case .filter:
+                    TransactionFilterView(viewModel: viewModel)
+                case .detail(let transaction):
+                    TransactionDetailView(transaction: transaction)
+                }
+            }
+            .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Tìm kiếm...")
+            .sheet(isPresented: $showingAddTransaction) {
+                AddTransactionView()
+            }
+            .sheet(item: $transactionToEdit) { transaction in
+                AddTransactionView(transactionToEdit: transaction)
+            }
+            .alert("Xóa giao dịch", isPresented: $showingDeleteAlert) {
+                Button("Hủy", role: .cancel) {
+                    transactionToDelete = nil
+                }
+                Button("Xóa", role: .destructive) {
+                    if let transaction = transactionToDelete {
+                        withAnimation {
+                            viewModel.deleteTransaction(transaction, context: modelContext)
+                        }
+                    }
+                }
+            } message: {
                 Text("Bạn có chắc chắn muốn xóa giao dịch này không?")
-        }
-        .onChange(of: viewModel.activeFilter) { _, newValue in
-            if newValue.isActive {
-                showToast()
+            }
+            .onChange(of: viewModel.activeFilter) { _, newValue in
+                if newValue.isActive {
+                    showToast()
+                }
             }
         }
     }
@@ -139,9 +153,7 @@ extension TransactionListView {
     
     private func daySectionContent(transactions: [Transaction]) -> some View {
         ForEach(transactions) { transaction in
-            NavigationLink {
-                TransactionDetailView(transaction: transaction)
-            } label: {
+            NavigationLink(value: TransactionRoute.detail(transaction)) {
                 TransactionRowView(transaction: transaction)
             }
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -243,6 +255,6 @@ extension TransactionListView {
 }
 
 #Preview {
-    TransactionListView()
+    TransactionListView(path: .constant(NavigationPath()))
         .modelContainer(PreviewContainer.shared)
 }
