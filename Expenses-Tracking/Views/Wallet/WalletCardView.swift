@@ -82,7 +82,7 @@ extension WalletCardView {
     
     private var balanceView: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Số dư")
+            Text(AppStrings.Wallet.currentBalance)
                 .font(.caption)
                 .opacity(0.8)
             

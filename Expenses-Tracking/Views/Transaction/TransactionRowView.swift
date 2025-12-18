@@ -42,7 +42,7 @@ struct TransactionRowView: View {
 extension TransactionRowView {
     private var formattedAmount: String {
         let prefix = (transaction.category?.type == .income) ? "+" : (transaction.category?.type == .expense ? "-" : "")
-        return "\(prefix)\(transaction.amount.formatted(.currency(code: "VND")))"
+        return "\(prefix)\(transaction.amount.formatted(.currency(code: AppStrings.General.currencyVND)))"
     }
     
     private var amountColor: Color {

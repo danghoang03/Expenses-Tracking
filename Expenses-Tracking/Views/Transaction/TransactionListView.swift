@@ -44,7 +44,7 @@ struct TransactionListView: View {
                     .padding(.trailing, 30)
                     .padding(.bottom, 10)
             }
-            .navigationTitle("Sổ giao dịch")
+            .navigationTitle(AppStrings.Transaction.listTitle)
             .overlay(alignment: .bottom) {
                 if showSuccessToast {
                     successToastView
@@ -70,18 +70,18 @@ struct TransactionListView: View {
                     TransactionDetailView(transaction: transaction)
                 }
             }
-            .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Tìm kiếm...")
+            .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: AppStrings.General.searchPrompt)
             .sheet(isPresented: $showingAddTransaction) {
                 AddTransactionView()
             }
             .sheet(item: $transactionToEdit) { transaction in
                 AddTransactionView(transactionToEdit: transaction)
             }
-            .alert("Xóa giao dịch", isPresented: $showingDeleteAlert) {
-                Button("Hủy", role: .cancel) {
+            .alert(AppStrings.Transaction.deleteButton, isPresented: $showingDeleteAlert) {
+                Button(AppStrings.General.cancel, role: .cancel) {
                     transactionToDelete = nil
                 }
-                Button("Xóa", role: .destructive) {
+                Button(AppStrings.General.delete, role: .destructive) {
                     if let transaction = transactionToDelete {
                         withAnimation {
                             viewModel.deleteTransaction(transaction, context: modelContext)
@@ -89,7 +89,7 @@ struct TransactionListView: View {
                     }
                 }
             } message: {
-                Text("Bạn có chắc chắn muốn xóa giao dịch này không?")
+                Text(AppStrings.Transaction.deleteConfirm)
             }
             .onChange(of: viewModel.activeFilter) { _, newValue in
                 if newValue.isActive {
@@ -103,11 +103,11 @@ struct TransactionListView: View {
 extension TransactionListView {
     private var emptyView: some View {
         ContentUnavailableView{
-            Label("Chưa có giao dịch", systemImage: "doc.text.magnifyingglass")
+            Label(AppStrings.Dashboard.noTransactionTitle, systemImage: "doc.text.magnifyingglass")
         } description: {
-            Text("Hãy tạo giao dịch đầu tiên của bạn ngay bây giờ.")
+            Text(AppStrings.Transaction.noTransactionDescription)
         } actions: {
-            Button("Thêm giao dịch") {
+            Button(AppStrings.Transaction.addTitle) {
                 showingAddTransaction = true
             }
             .buttonStyle(.borderedProminent)
@@ -117,16 +117,16 @@ extension TransactionListView {
     
     private var noResultView: some View {
         ContentUnavailableView {
-            Label("Không tìm thấy kết quả", systemImage: "magnifyingglass")
+            Label(AppStrings.Transaction.noResultFoundTitle, systemImage: "magnifyingglass")
         } description: {
             if viewModel.activeFilter.isActive {
-                Text("Thử thay đổi hoặc xóa bộ lọc để xem thêm kết quả.")
+                Text(AppStrings.Transaction.noResultFoundDesc)
             } else {
                 Text("Không tìm thấy kết quả cho từ khóa '\(viewModel.searchText)'")
             }
         } actions: {
             if viewModel.activeFilter.isActive {
-                Button("Xoá bộ lọc") {
+                Button(AppStrings.Transaction.deleteFilter) {
                     withAnimation {
                         viewModel.clearFilter()
                     }
@@ -168,7 +168,7 @@ extension TransactionListView {
             transactionToDelete = transaction
             showingDeleteAlert = true
         } label: {
-            Label("Xoá", systemImage: "trash")
+            Label(AppStrings.General.delete, systemImage: "trash")
         }
     }
     
@@ -176,7 +176,7 @@ extension TransactionListView {
         Button {
             transactionToEdit = transaction
         } label: {
-            Label("Sửa", systemImage: "pencil")
+            Label(AppStrings.General.edit, systemImage: "pencil")
         }
         .tint(.green)
     }
@@ -190,7 +190,7 @@ extension TransactionListView {
             Spacer()
             
             let total = viewModel.calculateDailyTotal(for: transactions)
-            Text("\(total > 0 ? "+" : "")\(total.formatted(.currency(code: "VND")))")
+            Text("\(total > 0 ? "+" : "")\(total.formatted(.currency(code: AppStrings.General.currencyVND)))")
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundStyle(total >= 0 ? .green : .red)
@@ -202,7 +202,7 @@ extension TransactionListView {
         ContentUnavailableView(
             "Không tìm thấy kết quả cho \(viewModel.searchText)",
             systemImage: "magnifyingglass",
-            description: Text("Hãy thử tìm kiếm lại với từ khóa khác")
+            description: Text(AppStrings.Transaction.emptySearchDesc)
         )
     }
     
@@ -225,7 +225,7 @@ extension TransactionListView {
             Image(systemName: "checkmark.circle.fill")
                 .font(.title3)
             
-            Text("Đã áp dụng bộ lọc")
+            Text(AppStrings.Transaction.appliedFilter)
                 .font(.subheadline)
                 .fontWeight(.medium)
             

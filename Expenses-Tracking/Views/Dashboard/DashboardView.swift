@@ -32,7 +32,7 @@ struct DashboardView: View {
                 .padding(.trailing, 30)
                 .padding(.bottom, 10)
         }
-        .navigationTitle("Tổng quan")
+        .navigationTitle(AppStrings.Dashboard.title)
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionView()
                 .onDisappear {
@@ -56,11 +56,11 @@ extension DashboardView {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Tổng tài sản")
+                    Text(AppStrings.Dashboard.totalBalance)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.white.opacity(0.9))
 
-                    Text(viewModel.totalBalance.formatted(.currency(code: "VND")))
+                    Text(viewModel.totalBalance.formatted(.currency(code: AppStrings.General.currencyVND)))
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                         .monospacedDigit()
@@ -80,14 +80,14 @@ extension DashboardView {
 
             HStack(spacing: 12) {
                 overviewMetric(
-                    title: "Thu nhập tháng này",
+                    title: AppStrings.Dashboard.monthlyIncome,
                     value: viewModel.currentMonthIncome,
                     systemImage: "arrow.down.left",
                     tint: .green
                 )
 
                 overviewMetric(
-                    title: "Chi tiêu tháng này",
+                    title: AppStrings.Dashboard.monthlyExpense,
                     value: viewModel.currentMonthExpense,
                     systemImage: "arrow.up.right",
                     tint: .red
@@ -125,7 +125,7 @@ extension DashboardView {
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.85))
 
-                Text(value.formatted(.currency(code: "VND")))
+                Text(value.formatted(.currency(code: AppStrings.General.currencyVND)))
                     .font(.system(size: 13))
                     .fontWeight(.semibold)
                     .foregroundStyle(.white)
@@ -147,7 +147,7 @@ extension DashboardView {
     
     private var walletScrollSection: some View {
         VStack(alignment: .leading) {
-            Text("Ví của tôi")
+            Text(AppStrings.Dashboard.myWallets)
                 .font(.headline)
                 .padding(.horizontal)
                 .padding(.bottom, 4)
@@ -186,7 +186,7 @@ extension DashboardView {
 
     private var recentTransactionSection: some View {
         VStack(alignment: .leading) {
-            Text("Giao dịch gần đây")
+            Text(AppStrings.Dashboard.recentTransactions)
                 .font(.headline)
                 .padding(.horizontal)
                 .padding(.bottom, 4)
@@ -202,9 +202,9 @@ extension DashboardView {
     
     private var emptyTransactionState: some View {
         ContentUnavailableView(
-            "Chưa có giao dịch",
+            AppStrings.Dashboard.noTransactionTitle,
             systemImage: "doc.text",
-            description: Text("Chọn + để thêm giao dịch đầu tiên.")
+            description: Text(AppStrings.Dashboard.noTransactionDesc)
         )
     }
     
@@ -227,7 +227,7 @@ extension DashboardView {
     }
     
     private var addTransactionButton: some View {
-        Button {
+        Button() {
             showingAddTransaction = true
         } label: {
             Image(systemName: "plus")

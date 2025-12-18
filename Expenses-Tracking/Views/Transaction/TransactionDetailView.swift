@@ -29,11 +29,11 @@ struct TransactionDetailView: View {
             
             deleteSection
         }
-        .navigationTitle("Chi tiết giao dịch")
+        .navigationTitle(AppStrings.Transaction.detailTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Sửa") {
+                Button(AppStrings.General.edit) {
                     showingEditSheet = true
                 }
             }
@@ -41,13 +41,13 @@ struct TransactionDetailView: View {
         .sheet(isPresented: $showingEditSheet) {
             AddTransactionView(transactionToEdit: transaction)
         }
-        .alert("Xoá giao dịch", isPresented: $showingDeleteAlert) {
+        .alert(AppStrings.Transaction.deleteButton, isPresented: $showingDeleteAlert) {
             Button("Huỷ", role: .cancel) { }
             Button("Xoá", role: .destructive) {
                 deleteTransaction()
             }
         } message: {
-            Text("Bạn có chắc chắn muốn xoá giao dịch này không?")
+            Text(AppStrings.Transaction.deleteConfirm)
         }
     }
 }
@@ -67,7 +67,7 @@ extension TransactionDetailView {
                         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                 }
                 
-                Text(transaction.category?.name ?? "Không có danh mục")
+                Text(transaction.category?.name ?? AppStrings.Transaction.noCategory)
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 
@@ -93,20 +93,20 @@ extension TransactionDetailView {
         
     private func formatAmount() -> String {
         let prefix = (transaction.category?.type == .income) ? "+" : (transaction.category?.type == .expense ? "-" : "")
-        return "\(prefix)\(transaction.amount.formatted(.currency(code: "VND")))"
+        return "\(prefix)\(transaction.amount.formatted(.currency(code: AppStrings.General.currencyVND)))"
     }
     
     private var timeSection: some View {
-        Section("Thời gian") {
+        Section(AppStrings.Settings.time) {
             HStack {
-                Label("Ngày", systemImage: "calendar")
+                Label(AppStrings.Transaction.day, systemImage: "calendar")
                 Spacer()
                 Text(transaction.createdAt.formatted(date: .numeric, time: .omitted))
                     .foregroundStyle(.secondary)
             }
             
             HStack {
-                Label("Giờ", systemImage: "clock")
+                Label(AppStrings.Transaction.hour, systemImage: "clock")
                 Spacer()
                 Text(transaction.createdAt.formatted(date: .omitted, time: .shortened))
                     .foregroundStyle(.secondary)
@@ -115,9 +115,9 @@ extension TransactionDetailView {
     }
     
     private var moneyFlowSection: some View {
-        Section("Dòng tiền") {
+        Section(AppStrings.Transaction.cashFlow) {
             HStack {
-                Label("Loại", systemImage: "tag")
+                Label(AppStrings.Category.type, systemImage: "tag")
                 Spacer()
                 if let type = transaction.category?.type {
                     Text(type.title)
@@ -131,7 +131,7 @@ extension TransactionDetailView {
             
             if let wallet = transaction.wallet {
                 HStack {
-                    Label(transaction.category?.type == .income ? "Vào ví" : "Từ ví", systemImage: wallet.iconSymbol)
+                    Label(transaction.category?.type == .income ? AppStrings.Transaction.incomeToWallet : AppStrings.Transaction.fromWallet, systemImage: wallet.iconSymbol)
                     Spacer()
                     Text(wallet.name)
                         .foregroundStyle(.secondary)
@@ -141,7 +141,7 @@ extension TransactionDetailView {
             if transaction.category?.type == .transfer,
                 let destinationWallet = transaction.destinationWallet {
                 HStack {
-                    Label("Đến ví", systemImage: destinationWallet.iconSymbol)
+                    Label(AppStrings.Transaction.toWallet, systemImage: destinationWallet.iconSymbol)
                     Spacer()
                     Text(destinationWallet.name)
                         .foregroundStyle(.secondary)
@@ -151,7 +151,7 @@ extension TransactionDetailView {
     }
     
     private func noteSection(_ note: String) -> some View {
-        Section("Ghi chú") {
+        Section(AppStrings.Transaction.note) {
             Text(note)
                 .font(.body)
                 .foregroundStyle(.primary)
@@ -164,7 +164,7 @@ extension TransactionDetailView {
             Button(role: .destructive) {
                 showingDeleteAlert = true
             } label: {
-                Label("Xoá giao dịch", systemImage: "trash")
+                Label(AppStrings.Transaction.deleteButton, systemImage: "trash")
                     .frame(maxWidth: .infinity)
             }
         }

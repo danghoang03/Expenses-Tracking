@@ -36,20 +36,20 @@ struct AddBudgetView: View {
                     inputView
                 }
             }
-            .navigationTitle(budgetToEdit == nil ? "Tạo ngân sách" : "Sửa ngân sách")
+            .navigationTitle(budgetToEdit == nil ? AppStrings.Budget.addTitle : AppStrings.Budget.editTitle)
             .onAppear {
                 loadData()
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
-                    Button("Xong") { isAmountFocused = false }
+                    Button(AppStrings.General.done) { isAmountFocused = false }
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Huỷ", systemImage: "xmark") { dismiss() }
+                    Button(AppStrings.General.cancel, systemImage: "xmark") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Lưu") {
+                    Button(AppStrings.General.save) {
                         if let budget = budgetToEdit {
                             updateBudget(budget)
                         } else {
@@ -66,9 +66,9 @@ struct AddBudgetView: View {
 extension AddBudgetView {
     private var emptyView: some View {
         ContentUnavailableView(
-            "Không còn danh mục khả dụng",
+            AppStrings.Budget.noAvailableCategoriesTitle,
             systemImage: "checkmark.circle",
-            description: Text("Tất cả danh mục chi tiêu đều đã có ngân sách.")
+            description: Text(AppStrings.Budget.noAvailableCategoriesDesc)
         )
     }
     
@@ -81,7 +81,7 @@ extension AddBudgetView {
                 )
             } label: {
                 HStack {
-                    Text("Danh mục")
+                    Text(AppStrings.Transaction.category)
                         .foregroundStyle(.primary)
                     
                     Spacer()
@@ -94,7 +94,7 @@ extension AddBudgetView {
                                 .foregroundStyle(.secondary)
                         }
                     } else {
-                        Text("Chọn danh mục")
+                        Text(AppStrings.Transaction.selectCategory)
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -102,15 +102,15 @@ extension AddBudgetView {
             }
             
             HStack {
-                Text("Hạn mức")
+                Text(AppStrings.Budget.limit)
                 Spacer()
-                TextField("0", value: $amount, format: .currency(code: "VND"))
+                TextField("0", value: $amount, format: .currency(code: AppStrings.General.currencyVND))
                     .keyboardType(.decimalPad)
                     .focused($isAmountFocused)
                     .multilineTextAlignment(.trailing)
             }
         } footer: {
-            Text("Ngân sách sẽ áp dụng cho tháng hiện tại và được tính toán dựa trên các giao dịch chi tiêu.")
+            Text(AppStrings.Budget.budgetNote)
         }
     }
     

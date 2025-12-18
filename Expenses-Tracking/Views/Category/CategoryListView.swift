@@ -20,11 +20,11 @@ struct CategoryListView: View {
             expenseSection
             incomeSection
         }
-        .navigationTitle("Danh mục")
+        .navigationTitle(AppStrings.Transaction.category)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: { showingAddSheet = true }) {
-                    Label("Thêm", systemImage: "plus")
+                    Label(AppStrings.General.add, systemImage: "plus")
                 }
             }
         }
@@ -44,9 +44,9 @@ extension CategoryListView {
     }
     
     private var expenseSection: some View {
-        Section("Chi tiêu") {
+        Section(AppStrings.Transaction.expense) {
             if expenseCategories.isEmpty {
-                ContentUnavailableView("Trống", systemImage: "cart", description: Text("Chưa có danh mục chi tiêu"))
+                ContentUnavailableView(AppStrings.General.empty, systemImage: "cart", description: Text(AppStrings.Category.noExpenseCategory))
             } else {
                 ForEach(categories.filter { $0.type == .expense }) { category in
                     CategoryRowView(category: category)
@@ -57,9 +57,9 @@ extension CategoryListView {
     }
     
     private var incomeSection: some View {
-        Section("Thu nhập") {
+        Section(AppStrings.Transaction.income) {
             if incomeCategories.isEmpty {
-                ContentUnavailableView("Trống", systemImage: "dollarsign.circle", description: Text("Chưa có danh mục thu nhập"))
+                ContentUnavailableView("Trống", systemImage: "dollarsign.circle", description: Text(AppStrings.Category.noIncomeCategory))
             } else {
                 ForEach(categories.filter{ $0.type == .income }) { category in
                     CategoryRowView(category: category)

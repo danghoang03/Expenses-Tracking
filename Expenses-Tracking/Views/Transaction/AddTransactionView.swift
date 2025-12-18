@@ -43,7 +43,7 @@ struct AddTransactionView: View {
                 categorySection
                 walletSection
             }
-            .navigationTitle(transactionToEdit == nil ? "Giao dịch mới" : "Sửa giao dịch")
+            .navigationTitle(transactionToEdit == nil ? AppStrings.Transaction.addTitle : AppStrings.Transaction.editTitle)
             .onAppear {
                 if let transaction = transactionToEdit {
                     setupUpdateView(transaction)
@@ -51,27 +51,27 @@ struct AddTransactionView: View {
                     setupDefaults()
                 }
             }
-            .alert("Số dư không đủ", isPresented: $showingAlert) {
-                Button("OK") { }
+            .alert(AppStrings.Transaction.insufficientFundTitle, isPresented: $showingAlert) {
+                Button(AppStrings.General.ok) { }
             } message: {
-                Text("Số dư của bạn hiện không đủ, vui lòng kiểm tra lại giao dịch.")
+                Text(AppStrings.Transaction.insufficientFundMsg)
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     if isAmountFocused {
                         Spacer()
-                        Button("Xong") {
+                        Button(AppStrings.General.done) {
                             isAmountFocused = false
                         }
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Huỷ", systemImage: "xmark") {
+                    Button(AppStrings.General.cancel, systemImage: "xmark") {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Lưu") {
+                    Button(AppStrings.General.save) {
                         if let transaction = transactionToEdit {
                             updateTransaction(transaction)
                         } else {
@@ -88,23 +88,27 @@ struct AddTransactionView: View {
 extension AddTransactionView {
     private var infoSection: some View {
         Section {
-            DatePicker("Ngày giao dịch", selection: $selectedDate, displayedComponents: [.date, .hourAndMinute])
+            DatePicker(AppStrings.Transaction.date, selection: $selectedDate, displayedComponents: [.date, .hourAndMinute])
                 .foregroundStyle(.primary)
             
-            TextField("Ghi chú (VD: Ăn sáng)", text: $note)
+            TextField(AppStrings.Transaction.notePlaceholder, text: $note)
         }
     }
     
     private var categorySection: some View {
         Section {
             if categories.isEmpty {
-                ContentUnavailableView("Chưa có danh mục", systemImage: "list.bullet.rectangle.portrait", description: Text("Vui lòng tạo danh mục ở phần Cài đặt."))
+                ContentUnavailableView(
+                    AppStrings.Transaction.noCategoryTitle,
+                    systemImage: "list.bullet.rectangle.portrait",
+                    description: Text(AppStrings.Transaction.noCategoryDesc)
+                )
             } else {
                 NavigationLink {
                     CategorySelectionView(categories: categories, selectedCategory: $selectedCategory)
                 } label: {
                     HStack {
-                        Text("Danh mục")
+                        Text(AppStrings.Transaction.category)
                             .foregroundStyle(.primary)
                         
                         Spacer()
@@ -117,7 +121,7 @@ extension AddTransactionView {
                                     .foregroundStyle(.secondary)
                             }
                         } else {
-                            Text("Chọn danh mục")
+                            Text(AppStrings.Transaction.selectCategory)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -129,14 +133,14 @@ extension AddTransactionView {
     }
     
     private var walletSection: some View {
-        Section("Tài khoản / Ví") {
+        Section(AppStrings.Transaction.walletHeader) {
             if wallets.isEmpty {
-                Text("Chưa có ví, vui lòng tạo ví ở phần Cài đặt")
+                Text(AppStrings.Transaction.noWallet)
                     .foregroundStyle(.secondary)
             } else {
                 VStack(alignment: .leading) {
                     if selectedCategory?.type == .transfer {
-                        Text("Từ ví")
+                        Text(AppStrings.Transaction.fromWallet)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .padding(.leading, 20)
@@ -166,7 +170,7 @@ extension AddTransactionView {
                         Divider()
                         
                         VStack(alignment: .leading) {
-                            Text("Đến ví")
+                            Text(AppStrings.Transaction.toWallet)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .padding(.leading, 20)
@@ -212,7 +216,7 @@ extension AddTransactionView {
     private func setupUpdateView(_ transaction: Transaction) {
         currencyViewModel.foreignAmount = transaction.amount
         selectedDate = transaction.createdAt
-        note = transaction.note ?? ""
+        note = cleanNoteContent(transaction.note ?? "")
         selectedWallet = transaction.wallet
         selectedCategory = transaction.category
         if selectedCategory?.type == .transfer {
@@ -232,11 +236,7 @@ extension AddTransactionView {
             return
         }
         
-        var finalNote = note != "" ? note : category.name
-        if currencyViewModel.selectedCurrency != .vnd {
-            let currencyInfo = "\n [\(currencyViewModel.foreignAmount.formatted()) \(currencyViewModel.selectedCurrency.id) - Rate: \(currencyViewModel.exchangeRate.formatted())]"
-            finalNote += currencyInfo
-        }
+        var finalNote = buildFinalNote(userNote: note, categoryName: category.name)
         
         do {
             try TransactionManager.addTransaction(amount: finalAmount, date: selectedDate, note: finalNote, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
@@ -267,8 +267,10 @@ extension AddTransactionView {
         
         TransactionManager.deleteTransaction(transaction, context: modelContext)
         
+        let finalNote = buildFinalNote(userNote: note, categoryName: category.name)
+        
         do {
-            try TransactionManager.addTransaction(amount: finalAmount, date: selectedDate, note: note, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
+            try TransactionManager.addTransaction(amount: finalAmount, date: selectedDate, note: finalNote, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
             dismiss()
         } catch {
             print("Error updating transaction: \(error)")
@@ -300,6 +302,26 @@ extension AddTransactionView {
         }
         
         return balance
+    }
+    
+    private func cleanNoteContent(_ rawNote: String) -> String {
+        if let range = rawNote.range(of: "\n [") {
+            return String(rawNote[..<range.lowerBound])
+        }
+        return rawNote
+    }
+    
+    private func buildFinalNote(userNote: String, categoryName: String) -> String {
+        var baseNote = userNote.trimmingCharacters(in: .whitespacesAndNewlines)
+        if baseNote.isEmpty {
+            baseNote = categoryName
+        }
+            
+        if currencyViewModel.selectedCurrency != .vnd {
+            let currencyInfo = "\n [\(currencyViewModel.foreignAmount.formatted()) \(currencyViewModel.selectedCurrency.id) - Rate: \(currencyViewModel.exchangeRate.formatted())]"
+            return baseNote + currencyInfo
+        }
+        return baseNote
     }
 }
 

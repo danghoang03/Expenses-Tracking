@@ -21,7 +21,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack(path: $path) {
             List {
-                Section("Dữ liệu nguồn") {
+                Section(AppStrings.Settings.sourceData) {
                     ForEach(viewModel.menuItems, id: \.self) { item in
                         NavigationLink(value: item) {
                             Label(item.title, systemImage: item.icon)
@@ -29,48 +29,48 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section("Thông báo") {
+                Section(AppStrings.Settings.notification) {
                     Toggle(isOn: $viewModel.isReminderEnabled) {
-                        Label("Nhắc nhở hàng ngày", systemImage:  "bell.fill")
+                        Label(AppStrings.Settings.dailyReminder, systemImage:  "bell.fill")
                             .tint(.blue)
                     }
                     
                     if viewModel.isReminderEnabled {
                         DatePicker(selection: $viewModel.reminderTime, displayedComponents: .hourAndMinute) {
-                            Label("Thời gian", systemImage: "clock")
+                            Label(AppStrings.Settings.time, systemImage: "clock")
                         }
                         .datePickerStyle(.compact)
                         .transition(.move(edge: .top).combined(with: .opacity))
                     }
                 }
                 
-                Section("Dữ liệu & Sao lưu") {
+                Section(AppStrings.Settings.dataBackup) {
                     Button {
                         exportData()
                     } label: {
                         if isExporting {
                             HStack {
-                                Text("Đang xuất dữ liệu...")
+                                Text(AppStrings.Settings.exporting)
                                 Spacer()
                                 ProgressView()
                             }
                         } else {
-                            Label("Xuất file CSV", systemImage: "square.and.arrow.up")
+                            Label(AppStrings.Settings.exportCSV, systemImage: "square.and.arrow.up")
                         }
                     }
                     .disabled(isExporting)
                 }
                 
-                Section("Ứng dụng") {
+                Section(AppStrings.Settings.appInfo) {
                     HStack {
-                        Text("Phiên bản")
+                        Text(AppStrings.Settings.version)
                         Spacer()
                         Text("1.0.0")
                             .foregroundStyle(.secondary)
                     }
                 }
             }
-            .navigationTitle("Cài đặt")
+            .navigationTitle(AppStrings.Settings.title)
             .navigationDestination(for: SettingsViewModel.Route.self) { route in
                 switch route {
                 case .wallets:
@@ -84,13 +84,13 @@ struct SettingsView: View {
                     ShareSheet(items: [url])
                 }
             }
-            .alert("Cấp quyền thông báo", isPresented: $viewModel.showPermissionAlert) {
+            .alert(AppStrings.Settings.authorizationAlertTitle, isPresented: $viewModel.showPermissionAlert) {
                 Button("Hủy", role: .cancel) { }
                 Button("Cài đặt") {
                     viewModel.openSystemSettings()
                 }
             } message: {
-                Text("Ứng dụng cần quyền thông báo để nhắc nhở bạn. Vui lòng bật trong Cài đặt.")
+                Text(AppStrings.Settings.authorizationAlertMsg)
             }
             .animation(.default, value: viewModel.isReminderEnabled)
         }

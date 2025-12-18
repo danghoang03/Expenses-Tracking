@@ -27,23 +27,23 @@ struct AddWalletView: View {
                 infoSection
                 appearanceSection
             }
-            .navigationTitle("Thêm Ví Mới")
+            .navigationTitle(AppStrings.Wallet.addTitle)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     if isAmountFocused {
                         Spacer()
-                        Button("Xong") {
+                        Button(AppStrings.General.done) {
                             isAmountFocused = false
                         }
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Huỷ", systemImage: "xmark") {
+                    Button(AppStrings.General.cancel, systemImage: "xmark") {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Lưu") {
+                    Button(AppStrings.General.save) {
                         saveWallet()
                     }
                     .disabled(name.isEmpty)
@@ -55,11 +55,11 @@ struct AddWalletView: View {
 
 extension AddWalletView {
     private var infoSection: some View {
-        Section("Thông tin cơ bản") {
-            TextField("Tên ví (VD: Tiền mặt)", text: $name)
+        Section(AppStrings.Wallet.basicInfo) {
+            TextField(AppStrings.Wallet.namePlaceholder, text: $name)
             
             HStack {
-                Text("Số dư")
+                Text(AppStrings.Wallet.currentBalance)
                 Spacer()
                 TextField("0", value: $balance, format: .currency(code: "VND"))
                     .keyboardType(.decimalPad)
@@ -70,11 +70,11 @@ extension AddWalletView {
     }
     
     private var appearanceSection: some View {
-        Section("Giao diện") {
-            ColorPicker("Màu đại diện", selection: $selectedColor)
+        Section(AppStrings.Category.interface) {
+            ColorPicker(AppStrings.Category.color, selection: $selectedColor)
             
             HStack {
-                Text("Biểu tượng")
+                Text(AppStrings.Wallet.icon)
                 Spacer()
                 Picker("", selection: $selectedIcon) {
                     ForEach(walletIcons, id: \.self) { icon in

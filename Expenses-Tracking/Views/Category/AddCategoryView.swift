@@ -25,15 +25,15 @@ struct AddCategoryView: View {
                 infoSection
                 appearanceSection
             }
-            .navigationTitle("Tạo danh mục")
+            .navigationTitle(AppStrings.Category.addTitle)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Huỷ", systemImage: "xmark") {
+                    Button(AppStrings.General.cancel, systemImage: "xmark") {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Lưu") {
+                    Button(AppStrings.General.save) {
                         saveCategory()
                     }
                     .disabled(name.isEmpty)
@@ -45,19 +45,19 @@ struct AddCategoryView: View {
 
 extension AddCategoryView {
     private var infoSection: some View {
-        Section("Thông tin") {
-            TextField("Tên danh mục", text: $name)
-            Picker("Loại", selection: $selectedType) {
-                Text("Chi tiêu").tag(TransactionType.expense)
-                Text("Thu nhập").tag(TransactionType.income)
+        Section(AppStrings.Category.info) {
+            TextField(AppStrings.Category.name, text: $name)
+            Picker(AppStrings.Category.type, selection: $selectedType) {
+                Text(AppStrings.Transaction.expense).tag(TransactionType.expense)
+                Text(AppStrings.Transaction.income).tag(TransactionType.income)
             }
             .pickerStyle(.segmented)
         }
     }
     
     private var appearanceSection: some View {
-        Section("Giao diện") {
-            ColorPicker("Màu sắc", selection: $selectedColor)
+        Section(AppStrings.Category.interface) {
+            ColorPicker(AppStrings.Category.color, selection: $selectedColor)
             iconSelector
         }
     }

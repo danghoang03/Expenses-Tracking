@@ -24,11 +24,11 @@ struct WalletListView: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle("Ví của tôi")
+        .navigationTitle(AppStrings.Wallet.listTitle)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: { showingAddSheet = true }) {
-                    Label("Thêm ví", systemImage: "plus")
+                    Label(AppStrings.Wallet.addTitle, systemImage: "plus")
                 }
             }
         }
@@ -41,9 +41,9 @@ struct WalletListView: View {
 extension WalletListView {
     private var emptyState: some View {
         ContentUnavailableView(
-            "Chưa có ví nào",
+            AppStrings.Wallet.noWalletTitle,
             systemImage: "creditcard",
-            description: Text("Hãy tạo ví để bắt đầu theo dõi dòng tiền."))
+            description: Text(AppStrings.Wallet.noWalletDesc))
         .listRowSeparator(.hidden)
     }
     
@@ -56,7 +56,7 @@ extension WalletListView {
                     Button(role: .destructive) {
                         deleteWallets(wallet)
                     } label: {
-                        Label("Xóa ví", systemImage: "trash")
+                        Label(AppStrings.Wallet.delete, systemImage: "trash")
                     }
                 }
         }

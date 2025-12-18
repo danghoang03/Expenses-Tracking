@@ -30,7 +30,7 @@ struct CurrencyInputSection: View {
             }
             .padding(.vertical, 4)
         } header: {
-            Text("Số tiền & Loại tiền")
+            Text(AppStrings.Transaction.currencyTitle)
         }
         .animation(.default, value: viewModel.selectedCurrency)
     }
@@ -39,7 +39,7 @@ struct CurrencyInputSection: View {
 extension CurrencyInputSection {
     private var currencyPickerButton: some View {
         Menu {
-            Picker("Loại tiền", selection: $viewModel.selectedCurrency) {
+            Picker(AppStrings.Transaction.currencyType, selection: $viewModel.selectedCurrency) {
                 ForEach(Currency.allCases) { currency in
                     Text("\(currency.flag) \(currency.id)").tag(currency)
                 }
@@ -94,7 +94,7 @@ extension CurrencyInputSection {
         Group {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("Tỷ giá")
+                    Text(AppStrings.Transaction.exchangeRate)
                         .foregroundStyle(.secondary)
                     
                     Spacer()
@@ -137,7 +137,7 @@ extension CurrencyInputSection {
                     
                     Spacer()
                     
-                    Button(viewModel.isManualRate ? "Dùng tỷ giá API" : "Nhập thủ công") {
+                    Button(viewModel.isManualRate ? AppStrings.Transaction.useAPI : AppStrings.Transaction.manual) {
                         viewModel.toggleManualRate()
                     }
                     .font(.caption2)
@@ -146,12 +146,12 @@ extension CurrencyInputSection {
             }
             
             HStack {
-                Text("Thành tiền (VND)")
+                Text(AppStrings.Transaction.resultVND)
                     .fontWeight(.semibold)
                 
                 Spacer()
                 
-                Text(viewModel.finalVNDAmount.formatted(.currency(code: "VND")))
+                Text(viewModel.finalVNDAmount.formatted(.currency(code: AppStrings.General.currencyVND)))
                     .font(.title3)
                     .fontWeight(.bold)
                     .foregroundStyle(.blue)

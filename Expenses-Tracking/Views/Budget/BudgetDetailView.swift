@@ -27,23 +27,23 @@ struct BudgetDetailView: View {
             
             deleteSection
         }
-        .navigationTitle(budget.category?.name ?? "Chi tiết ngân sách")
+        .navigationTitle(budget.category?.name ?? AppStrings.Budget.detailBudget)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            Button("Sửa") {
+            Button(AppStrings.General.edit) {
                 showingEditSheet = true
             }
         }
         .sheet(isPresented: $showingEditSheet) {
             AddBudgetView(budgetToEdit: budget)
         }
-        .alert("Xoá ngân sách", isPresented: $showingDeleteAlert) {
-            Button("Hủy", role: .cancel) { }
-            Button("Xóa", role: .destructive) {
+        .alert(AppStrings.Budget.deleteBudgetAlertTitle, isPresented: $showingDeleteAlert) {
+            Button(AppStrings.General.cancel, role: .cancel) { }
+            Button(AppStrings.General.delete, role: .destructive) {
                 deleteBudget()
             }
         } message: {
-            Text("Bạn có chắc chắn muốn xóa ngân sách này không? Dữ liệu giao dịch sẽ không bị ảnh hưởng.")
+            Text(AppStrings.Budget.deleteBudgetAlertMsg)
         }
     }
 }
@@ -117,7 +117,7 @@ extension BudgetDetailView {
                             .fontWeight(.bold)
                             .foregroundStyle(statusColor)
                         
-                        Text("Đã dùng")
+                        Text(AppStrings.Budget.used)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -125,9 +125,9 @@ extension BudgetDetailView {
                 .frame(width: 160, height: 160)
                 
                 HStack(spacing: 12) {
-                    infoItem(title: "Hạn mức", value: budget.limit, color: .primary)
-                    infoItem(title: "Đã chi", value: spentAmount, color: statusColor)
-                    infoItem(title: "Còn lại", value: remainingAmount, color: remainingAmount < 0 ? .red : .blue)
+                    infoItem(title: AppStrings.Budget.limit, value: budget.limit, color: .primary)
+                    infoItem(title: AppStrings.Budget.spent, value: spentAmount, color: statusColor)
+                    infoItem(title: AppStrings.Budget.remaining, value: remainingAmount, color: remainingAmount < 0 ? .red : .blue)
                 }
                 .padding(.top)
             }
@@ -145,12 +145,12 @@ extension BudgetDetailView {
                     .foregroundStyle(.yellow)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Gợi ý chi tiêu")
+                    Text(AppStrings.Budget.suggestion)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
                     
-                    Text("Bạn có thể tiêu \(adviceAmount.formatted(.currency(code: "VND")))/ngày trong \(daysLeftInMonth) ngày tới.")
+                    Text("Bạn có thể tiêu \(adviceAmount.formatted(.currency(code: AppStrings.General.currencyVND)))/ngày trong \(daysLeftInMonth) ngày tới.")
                         .font(.subheadline)
                         .fontWeight(.medium)
                 }
@@ -159,12 +159,12 @@ extension BudgetDetailView {
     }
     
     private var transactionHistorySection: some View {
-        Section("Giao dịch liên quan tháng này") {
+        Section(AppStrings.Budget.relevantTransactionsThisMonth) {
             if relevantTransaction.isEmpty {
                 ContentUnavailableView(
-                    "Chưa có giao dịch",
+                    AppStrings.Dashboard.noTransactionTitle,
                     systemImage: "cart",
-                    description: Text("Các chi tiêu thuộc danh mục này sẽ xuất hiện tại đây.")
+                    description: Text(AppStrings.Transaction.noTransactionDesc)
                 )
             } else {
                 ForEach(relevantTransaction) { transaction in
@@ -179,7 +179,7 @@ extension BudgetDetailView {
             Button(role: .destructive) {
                 showingDeleteAlert = true
             } label: {
-                Label("Xoá ngân sách", systemImage: "trash")
+                Label(AppStrings.Budget.deleteBudgetAlertTitle, systemImage: "trash")
                     .frame(maxWidth: .infinity)
             }
         }

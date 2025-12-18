@@ -52,12 +52,12 @@ struct TransactionFilterView: View {
 extension TransactionFilterView {
     private var timeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Theo thời gian")
+            Text(AppStrings.Transaction.byTime)
                 .font(.headline)
             
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 filterButton(
-                    title: "Tất cả",
+                    title: AppStrings.Transaction.all,
                     isSelected: draftFilter.timeOption == .all
                 ) {
                     draftFilter.timeOption = .all
@@ -83,7 +83,7 @@ extension TransactionFilterView {
                 }
             } label: {
                 HStack(spacing: 4) {
-                    Text(isTimeExpanded ? "Thu gọn" : "Xem thêm")
+                    Text(isTimeExpanded ? AppStrings.Transaction.reduce : AppStrings.Transaction.expand)
                         .font(.footnote)
                         .fontWeight(.medium)
 
@@ -98,12 +98,12 @@ extension TransactionFilterView {
     
     private var walletSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Theo ví")
+            Text(AppStrings.Transaction.byWallet)
                 .font(.headline)
             
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 filterButton(
-                    title: "Tất cả",
+                    title: AppStrings.Transaction.all,
                     isSelected: draftFilter.selectedWallet == nil
                 ) {
                     draftFilter.selectedWallet = nil
@@ -123,12 +123,12 @@ extension TransactionFilterView {
     
     private var typeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Theo loại giao dịch")
+            Text(AppStrings.Transaction.byType)
                 .font(.headline)
             
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 filterButton(
-                    title: "Tất cả",
+                    title: AppStrings.Transaction.all,
                     isSelected: draftFilter.selectedType == nil
                 ) {
                     draftFilter.selectedType = nil
@@ -153,19 +153,19 @@ extension TransactionFilterView {
     
     private var categorySection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Theo danh mục")
+            Text(AppStrings.Transaction.byCategory)
                 .font(.headline)
             
             let filteredCategories = categories.filter { $0.type == draftFilter.selectedType }
             
             if filteredCategories.isEmpty {
-                Text("Chưa có danh mục nào")
+                Text(AppStrings.Transaction.noCategoryTitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 10)], spacing: 10) {
                     filterButton(
-                        title: "Tất cả",
+                        title: AppStrings.Transaction.all,
                         isSelected: draftFilter.selectedCategory == nil
                     ) {
                         draftFilter.selectedCategory = nil
@@ -193,7 +193,7 @@ extension TransactionFilterView {
                     viewModel.clearFilter()
                     dismiss()
                 } label: {
-                    Text("Xoá bộ lọc")
+                    Text(AppStrings.Transaction.deleteFilter)
                         .fontWeight(.semibold)
                         .foregroundStyle(.red)
                         .frame(maxWidth: .infinity)
@@ -210,7 +210,7 @@ extension TransactionFilterView {
                     viewModel.activeFilter = draftFilter
                     dismiss()
                 } label: {
-                    Text("Áp dụng")
+                    Text(AppStrings.Transaction.apply)
                         .fontWeight(.semibold)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)

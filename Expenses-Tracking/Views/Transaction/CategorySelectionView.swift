@@ -15,24 +15,24 @@ struct CategorySelectionView: View {
     var body: some View {
         List {
             if let transfer = categories.first(where: { $0.type == .transfer }) {
-                Section("Hệ thống") {
+                Section(AppStrings.Category.system) {
                     categoryRow(for: transfer)
                 }
             }
             
-            Section("Chi tiêu") {
+            Section(AppStrings.Transaction.expense) {
                 ForEach(categories.filter { $0.type == .expense }) { category in
                     categoryRow(for: category)
                 }
             }
             
-            Section("Thu nhập") {
+            Section(AppStrings.Transaction.income) {
                 ForEach(categories.filter { $0.type == .income }) { category in
                     categoryRow(for: category)
                 }
             }
         }
-        .navigationTitle("Chọn danh mục")
+        .navigationTitle(AppStrings.Transaction.selectCategory)
         .navigationBarTitleDisplayMode(.inline)
     }
 }

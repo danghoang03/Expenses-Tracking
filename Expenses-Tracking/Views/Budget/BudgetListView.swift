@@ -29,9 +29,9 @@ struct BudgetListView: View {
                     budgetList
                 }
             }
-            .navigationTitle("Ngân sách tháng này")
+            .navigationTitle(AppStrings.Budget.listTitle)
             .toolbar {
-                Button("Thêm ngân sách", systemImage: "plus") {
+                Button(AppStrings.Budget.addTitle, systemImage: "plus") {
                     showingAddBudget = true
                 }
             }
@@ -54,12 +54,12 @@ struct BudgetListView: View {
 extension BudgetListView {
     private var emptyView: some View {
         ContentUnavailableView {
-            Label("Chưa có ngân sách",
+            Label(AppStrings.Budget.noBudget,
             systemImage: "chart.bar.doc.horizontal")
         } description: {
-            Text("Đặt giới hạn chi tiêu giúp bạn kiểm soát tài chính tốt hơn.")
+            Text(AppStrings.Budget.noBudgetDesc)
         } actions: {
-            Button("Tạo ngân sách ngay") { showingAddBudget = true }
+            Button(AppStrings.Budget.creatBudgetNow) { showingAddBudget = true }
             .buttonStyle(.borderedProminent)
         }
     }
@@ -84,7 +84,7 @@ extension BudgetListView {
                         
                         Spacer()
                         
-                        Text(item.budget.limit.formatted(.currency(code: "VND")))
+                        Text(item.budget.limit.formatted(.currency(code: AppStrings.General.currencyVND)))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -104,7 +104,7 @@ extension BudgetListView {
                     .padding(.vertical)
                     
                     HStack {
-                        Text("Đã chi: \(item.spent.formatted(.currency(code: "VND")))")
+                        Text("Đã chi: \(item.spent.formatted(.currency(code: AppStrings.General.currencyVND)))")
                             .font(.caption)
                             .foregroundStyle(item.isOverBudget ? .red : .secondary)
                         
@@ -131,7 +131,7 @@ extension BudgetListView {
                 modelContext.delete(budget)
             }
         } label: {
-            Label("Xoá", systemImage: "trash")
+            Label(AppStrings.General.delete, systemImage: "trash")
         }
     }
     

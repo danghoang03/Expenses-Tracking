@@ -37,19 +37,19 @@ struct ContentView: View {
                 DashboardView()
             }
             .tabItem {
-                Label("Tổng quan", systemImage: "house.fill")
+                Label(AppStrings.Dashboard.title, systemImage: "house.fill")
             }
             .tag(Tab.dashboard)
             
             TransactionListView(path: $transactionPath)
                 .tabItem {
-                    Label("Sổ giao dịch", systemImage: "list.bullet.rectangle.portrait.fill")
+                    Label(AppStrings.Transaction.listTitle, systemImage: "list.bullet.rectangle.portrait.fill")
                 }
                 .tag(Tab.transaction)
             
             BudgetListView(path: $budgetPath)
                 .tabItem {
-                    Label("Ngân sách", systemImage: "chart.bar.fill")
+                    Label(AppStrings.Budget.title, systemImage: "chart.bar.fill")
                 }
                 .tag(Tab.budget)
             
@@ -57,13 +57,13 @@ struct ContentView: View {
                 ReportView()
             }
             .tabItem {
-                Label("Báo cáo", systemImage: "chart.pie.fill")
+                Label(AppStrings.Report.title, systemImage: "chart.pie.fill")
             }
             .tag(Tab.report)
             
             SettingsView(path: $settingsPath)
                 .tabItem {
-                    Label("Cài đặt", systemImage: "gearshape.fill")
+                    Label(AppStrings.Settings.title, systemImage: "gearshape.fill")
                 }
                 .tag(Tab.settings)
         }

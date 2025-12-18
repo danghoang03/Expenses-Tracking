@@ -38,7 +38,7 @@ struct BudgetCategorySelectionView: View {
             }
             .buttonStyle(.plain)
         }
-        .navigationTitle("Chọn danh mục")
+        .navigationTitle(AppStrings.Transaction.selectCategory)
         .navigationBarTitleDisplayMode(.inline)
     }
 }

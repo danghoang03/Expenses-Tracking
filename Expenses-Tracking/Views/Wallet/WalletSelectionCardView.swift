@@ -34,7 +34,7 @@ struct WalletSelectionCardView: View {
                 .fontWeight(.medium)
                 .lineLimit(1)
             
-            Text((customBalance ?? wallet.currentBalance).formatted(.currency(code: "VND")))
+            Text((customBalance ?? wallet.currentBalance).formatted(.currency(code: AppStrings.General.currencyVND)))
                 .font(.caption2)
                 .opacity(0.8)
                 

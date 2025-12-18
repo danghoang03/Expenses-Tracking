@@ -17,9 +17,9 @@ enum TransactionType: String, Codable, CaseIterable, Identifiable {
     
     var title: String {
         switch self {
-            case .income: return "Thu nhập"
-            case .expense: return "Chi tiêu"
-            case .transfer: return "Chuyển khoản"
+            case .income: return AppStrings.Transaction.income
+            case .expense: return AppStrings.Transaction.expense
+            case .transfer: return AppStrings.Transaction.transfer
         }
     }
     

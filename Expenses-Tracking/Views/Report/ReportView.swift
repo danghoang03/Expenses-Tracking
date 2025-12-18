@@ -34,7 +34,7 @@ struct ReportView: View {
                 .padding(.vertical)
             }
             .background(Color(uiColor: .systemGroupedBackground))
-            .navigationTitle("Báo cáo")
+            .navigationTitle(AppStrings.Report.title)
             .onAppear {
                 viewModel.fetchData(context: modelContext)
             }
@@ -56,7 +56,7 @@ struct ReportView: View {
 extension ReportView {
     
     private var timeFilterSection: some View {
-        Picker("Thời gian", selection: $viewModel.timeRange.animation(.easeInOut)) {
+        Picker(AppStrings.Settings.time, selection: $viewModel.timeRange.animation(.easeInOut)) {
             ForEach(ReportViewModel.TimeRange.allCases) { range in
                 Text(range.rawValue).tag(range)
             }
@@ -67,11 +67,11 @@ extension ReportView {
     
     private var summaryCard: some View {
         VStack(spacing: 8) {
-            Text("Tổng chi tiêu")
+            Text(AppStrings.Report.total)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             
-            Text(viewModel.totalSpent.formatted(.currency(code: "VND")))
+            Text(viewModel.totalSpent.formatted(.currency(code: AppStrings.General.currencyVND)))
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(.red)
                 .contentTransition(.numericText())
@@ -87,7 +87,7 @@ extension ReportView {
     
     private var barChartSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Xu hướng chi tiêu", systemImage: "chart.bar.fill")
+            Label(AppStrings.Report.expenseTrend, systemImage: "chart.bar.fill")
                 .font(.headline)
                 .foregroundStyle(.primary)
                 .padding(.horizontal)
@@ -106,7 +106,7 @@ extension ReportView {
     
     private var barChartView: some View {
         VStack(alignment: .leading) {
-            Text("Đơn vị: VNĐ")
+            Text(AppStrings.Report.vndUnit)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -149,9 +149,9 @@ extension ReportView {
     
     private var emptyBarChartState: some View {
         ContentUnavailableView(
-            "Chưa có dữ liệu",
+            AppStrings.Report.noData,
             systemImage: "chart.bar",
-            description: Text("Hãy thêm giao dịch chi tiêu để xem xu hướng chi tiêu.")
+            description: Text(AppStrings.Report.noDataDesc)
         )
         .frame(height: 200)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
@@ -181,7 +181,7 @@ extension ReportView {
                 .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
                 .foregroundStyle(.gray.opacity(0.5))
                 .annotation(position: .leading, alignment: .bottom) {
-                    Text("Trung bình")
+                    Text(AppStrings.Report.average)
                         .font(.caption2)
                         .foregroundStyle(.gray)
                 }
@@ -243,7 +243,7 @@ extension ReportView {
     
     private var donutChartSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Label("Cơ cấu chi tiêu", systemImage: "chart.pie.fill")
+            Label(AppStrings.Report.expenseStructure, systemImage: "chart.pie.fill")
                 .font(.headline)
                 .padding(.horizontal)
             
@@ -260,7 +260,7 @@ extension ReportView {
         VStack {
             Chart(viewModel.categoryData) { item in
                 SectorMark(
-                    angle: .value("Số tiền", item.amount),
+                    angle: .value(AppStrings.Report.amount, item.amount),
                     innerRadius: .ratio(0.6),
                     angularInset: 1.5
                 )
@@ -302,7 +302,7 @@ extension ReportView {
                     .fontWeight(.bold)
                     .foregroundStyle(Color(hex: selectedItem.colorHex))
                 
-                Text(selectedItem.amount.formatted(.currency(code: "VND")))
+                Text(selectedItem.amount.formatted(.currency(code: AppStrings.General.currencyVND)))
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
@@ -357,7 +357,7 @@ extension ReportView {
                     Spacer()
                     
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text(item.amount.formatted(.currency(code: "VND")))
+                        Text(item.amount.formatted(.currency(code: AppStrings.General.currencyVND)))
                             .fontWeight(.semibold)
                             .font(.callout)
                         
@@ -396,9 +396,9 @@ extension ReportView {
     
     private var emptyDonutChartState: some View {
         ContentUnavailableView(
-            "Chưa có dữ liệu",
+            AppStrings.Report.noData,
             systemImage: "chart.pie",
-            description: Text("Hãy thêm giao dịch chi tiêu để xem biểu đồ phân tích.")
+            description: Text(AppStrings.Report.noDataDonutDesc)
         )
         .frame(height: 300)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
