@@ -236,7 +236,7 @@ extension AddTransactionView {
             return
         }
         
-        var finalNote = buildFinalNote(userNote: note, categoryName: category.name)
+        let finalNote = buildFinalNote(userNote: note, categoryName: category.name)
         
         do {
             try TransactionManager.addTransaction(amount: finalAmount, date: selectedDate, note: finalNote, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
@@ -255,8 +255,12 @@ extension AddTransactionView {
         var availableBalance = wallet.currentBalance
         
         if let oldWallet = transaction.wallet, oldWallet == wallet {
-            if let oldType = transaction.category?.type, oldType != .income {
-                availableBalance += transaction.amount
+            if let oldType = transaction.category?.type {
+                if oldType == .income {
+                    availableBalance -= transaction.amount
+                } else if oldType == .transfer || oldType == .expense {
+                    availableBalance += transaction.amount
+                }
             }
         }
         
@@ -264,13 +268,20 @@ extension AddTransactionView {
             showingAlert = true
             return
         }
-        
-        TransactionManager.deleteTransaction(transaction, context: modelContext)
-        
+                
         let finalNote = buildFinalNote(userNote: note, categoryName: category.name)
         
         do {
-            try TransactionManager.addTransaction(amount: finalAmount, date: selectedDate, note: finalNote, category: category, wallet: wallet, destinationWallet: selectedDestinationWallet, context: modelContext)
+            try TransactionManager.updateTransaction(
+                transaction: transaction,
+                newAmount: finalAmount,
+                newDate: selectedDate,
+                newNote: finalNote,
+                newCategory: category,
+                newWallet: wallet,
+                newDestinationWallet: selectedDestinationWallet,
+                context: modelContext
+            )
             dismiss()
         } catch {
             print("Error updating transaction: \(error)")
