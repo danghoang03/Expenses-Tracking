@@ -10,12 +10,14 @@ import SwiftUI
 struct TransactionRowView: View {
     let transaction: Transaction
     
+    @ScaledMetric(relativeTo: .body) var iconSize: CGFloat = 44
+    
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: transaction.displayIcon)
                 .font(.title2)
                 .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
+                .frame(width: iconSize, height: iconSize)
                 .background(Color(hex: transaction.displayColor))
                 .clipShape(Circle())
             
@@ -23,7 +25,8 @@ struct TransactionRowView: View {
                 Text(transaction.displayTitle)
                     .font(.body)
                     .fontWeight(.medium)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 Text(transaction.createdAt.formatted(date: .numeric, time: .shortened))
                     .font(.caption)
@@ -35,7 +38,13 @@ struct TransactionRowView: View {
             Text(formattedAmount)
                 .fontWeight(.bold)
                 .foregroundStyle(amountColor)
+                .layoutPriority(1)
+                .minimumScaleFactor(0.8)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text("\(transaction.displayTitle), vào ngày \(transaction.createdAt.formatted(date: .numeric, time: .omitted))"))
+        .accessibilityValue(Text("Số tiền \(formattedAmount)"))
+        .accessibilityHint(Text("Chạm hai lần để xem chi tiết"))
     }
 }
 

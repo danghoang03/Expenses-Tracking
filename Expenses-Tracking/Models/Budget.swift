@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Budget {
+final class Budget: Hashable {
     var limit: Double
     var createdAt: Date
     
@@ -19,5 +19,13 @@ final class Budget {
         self.limit = limit
         self.category = category
         self.createdAt = Date()
+    }
+    
+    static func == (lhs: Budget, rhs: Budget) -> Bool {
+        return lhs === rhs 
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
     }
 }

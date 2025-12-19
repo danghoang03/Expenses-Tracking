@@ -66,62 +66,11 @@ extension BudgetListView {
     
     private var budgetList: some View {
         ForEach(viewModel.budgetProgresses) { item in
-            ZStack {
-                NavigationLink(value: item.budget) {
-                    EmptyView()
+            BudgetRowView(item: item)
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    deleteButton(for: item.budget)
+                    updateButton(for: item.budget)
                 }
-                .opacity(0)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Label {
-                            Text(item.budget.category?.name ?? "N/A")
-                                .fontWeight(.semibold)
-                        } icon: {
-                            Image(systemName: item.budget.category?.iconSymbol ?? "circle")
-                                .foregroundStyle(Color(hex: item.budget.category?.colorHex ?? "#808080"))
-                        }
-                        
-                        Spacer()
-                        
-                        Text(item.budget.limit.formatted(.currency(code: AppStrings.General.currencyVND)))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    //Progress Bar
-                    GeometryReader { geometry in
-                        ZStack(alignment: .leading) {
-                            Capsule()
-                                .fill(Color(uiColor: .systemGray5))
-                            
-                            Capsule()
-                                .fill(progressBarColor(for: item))
-                                .frame(width: min(geometry.size.width * item.progress, geometry.size.width))
-                        }
-                    }
-                    .frame(height: 12)
-                    .padding(.vertical)
-                    
-                    HStack {
-                        Text("Đã chi: \(item.spent.formatted(.currency(code: AppStrings.General.currencyVND)))")
-                            .font(.caption)
-                            .foregroundStyle(item.isOverBudget ? .red : .secondary)
-                        
-                        Spacer()
-                        
-                        Text("\(Int(item.progress * 100))%")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundStyle(progressBarColor(for: item))
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                deleteButton(for: item.budget)
-                updateButton(for: item.budget)
-            }
         }
     }
 
@@ -132,19 +81,6 @@ extension BudgetListView {
             }
         } label: {
             Label(AppStrings.General.delete, systemImage: "trash")
-        }
-    }
-    
-    private func progressBarColor(for item: BudgetViewModel.BudgetProgress) -> Color {
-        if item.isOverBudget { return .red }
-        if item.progress > 0.8 { return .orange }
-        return .blue
-    }
-    
-    private func deleteBudgets(_ offsets: IndexSet) {
-        for index in offsets {
-            let budget = viewModel.budgetProgresses[index].budget
-            modelContext.delete(budget)
         }
     }
     
