@@ -10,7 +10,18 @@
 		893FBC932EF6B1E40081BEF5 /* Expenses-Tracking.docc in Sources */ = {isa = PBXBuildFile; fileRef = 893FBC922EF6B1E40081BEF5 /* Expenses-Tracking.docc */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		890305D82EF6DE73009618F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 899DAEAE2EE9CEF500C5F566 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 899DAEB52EE9CEF500C5F566;
+			remoteInfo = "Expenses-Tracking";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		890305D42EF6DE73009618F2 /* Expenses-TrackingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Expenses-TrackingTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		893FBC922EF6B1E40081BEF5 /* Expenses-Tracking.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = "Expenses-Tracking.docc"; sourceTree = "<group>"; };
 		899DAEB62EE9CEF500C5F566 /* Expenses-Tracking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expenses-Tracking.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -27,6 +38,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		890305D52EF6DE73009618F2 /* Expenses-TrackingTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Expenses-TrackingTests";
+			sourceTree = "<group>";
+		};
 		899DAEB82EE9CEF500C5F566 /* Expenses-Tracking */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -38,6 +54,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		890305D12EF6DE73009618F2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		899DAEB32EE9CEF500C5F566 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -53,6 +76,7 @@
 			children = (
 				893FBC922EF6B1E40081BEF5 /* Expenses-Tracking.docc */,
 				899DAEB82EE9CEF500C5F566 /* Expenses-Tracking */,
+				890305D52EF6DE73009618F2 /* Expenses-TrackingTests */,
 				899DAEB72EE9CEF500C5F566 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				899DAEB62EE9CEF500C5F566 /* Expenses-Tracking.app */,
+				890305D42EF6DE73009618F2 /* Expenses-TrackingTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,6 +93,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		890305D32EF6DE73009618F2 /* Expenses-TrackingTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 890305DC2EF6DE73009618F2 /* Build configuration list for PBXNativeTarget "Expenses-TrackingTests" */;
+			buildPhases = (
+				890305D02EF6DE73009618F2 /* Sources */,
+				890305D12EF6DE73009618F2 /* Frameworks */,
+				890305D22EF6DE73009618F2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				890305D92EF6DE73009618F2 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				890305D52EF6DE73009618F2 /* Expenses-TrackingTests */,
+			);
+			name = "Expenses-TrackingTests";
+			packageProductDependencies = (
+			);
+			productName = "Expenses-TrackingTests";
+			productReference = 890305D42EF6DE73009618F2 /* Expenses-TrackingTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		899DAEB52EE9CEF500C5F566 /* Expenses-Tracking */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 899DAEC12EE9CEF600C5F566 /* Build configuration list for PBXNativeTarget "Expenses-Tracking" */;
@@ -100,6 +148,10 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					890305D32EF6DE73009618F2 = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = 899DAEB52EE9CEF500C5F566;
+					};
 					899DAEB52EE9CEF500C5F566 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
@@ -120,11 +172,19 @@
 			projectRoot = "";
 			targets = (
 				899DAEB52EE9CEF500C5F566 /* Expenses-Tracking */,
+				890305D32EF6DE73009618F2 /* Expenses-TrackingTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		890305D22EF6DE73009618F2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		899DAEB42EE9CEF500C5F566 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -135,6 +195,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		890305D02EF6DE73009618F2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		899DAEB22EE9CEF500C5F566 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -145,7 +212,57 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		890305D92EF6DE73009618F2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 899DAEB52EE9CEF500C5F566 /* Expenses-Tracking */;
+			targetProxy = 890305D82EF6DE73009618F2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		890305DA2EF6DE73009618F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = S6L523T38S;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "me.Hoang.Dang.Expenses-TrackingTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expenses-Tracking.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Expenses-Tracking";
+			};
+			name = Debug;
+		};
+		890305DB2EF6DE73009618F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = S6L523T38S;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "me.Hoang.Dang.Expenses-TrackingTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expenses-Tracking.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Expenses-Tracking";
+			};
+			name = Release;
+		};
 		899DAEBF2EE9CEF600C5F566 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 899DAEB82EE9CEF500C5F566 /* Expenses-Tracking */;
@@ -346,6 +463,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		890305DC2EF6DE73009618F2 /* Build configuration list for PBXNativeTarget "Expenses-TrackingTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				890305DA2EF6DE73009618F2 /* Debug */,
+				890305DB2EF6DE73009618F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		899DAEB12EE9CEF500C5F566 /* Build configuration list for PBXProject "Expenses-Tracking" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
