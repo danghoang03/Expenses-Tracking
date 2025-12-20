@@ -7,9 +7,19 @@
 
 import Foundation
 
-
+/// A utility for exporting app data to CSV format.
 struct CSVManager {
     
+    /// Generates a CSV file URL from a list of transactions.
+    ///
+    /// This method formates `Transaction` objects into a comma-seperated string suitable for spreadsheet software (Excel, Numbers, etc.).
+    ///
+    /// **Character Encoding:**
+    /// It prepends a **UTF-8 BOM (Byte Order Mark)** (`0xEF, 0xBB, 0xBF`) to the file content.
+    /// This ensures that Microsoft Excel correctly recognizes special characters (like Vietnamese accents) when opening the file.
+    ///
+    /// - Parameter transactions: An array of `Transaction` objects to export.
+    /// - Returns: A temporary `URL` pointing to the generated `.csv` file, or `nil` if writing fails.
     static func generateCSV(from transactions: [Transaction]) -> URL? {
         // name of columns
         var csvString = "Ngày,Giờ,Số tiền,Loại,Danh mục,Ví,Ghi chú\n"

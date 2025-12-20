@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import Observation
 
+/// The ViewModel managing data aggregation and formatting for the Report screen.
 @Observable
 class ReportViewModel {
     
@@ -20,20 +21,24 @@ class ReportViewModel {
         var id: String { self.rawValue }
     }
     
+    /// Represents a single bar in the bar chart.
     struct ChartData: Identifiable {
         let id = UUID()
         let label: String
         let date: Date
         let amount: Double
+        /// Indicates if this data point represents the current time period (e.g., today, this week, or this month).
         let isCurrent: Bool
     }
     
+    /// Represents a slice in the donut chart.
     struct CategoryData: Identifiable {
         let id = UUID()
         let categoryName: String
         let colorHex: String
         let icon: String
         let amount: Double
+        /// The proportional value (0.0 to 1.0) of this category relative to the total expense.
         let percentage: Double
     }
     
@@ -49,6 +54,18 @@ class ReportViewModel {
         chartData.map(\.amount).max() ?? 0
     }
     
+    
+    /// Fetches transactions and processes data for charts based on the selected `timeRange`.
+    ///
+    /// This method performs the following steps:
+    /// 1. Determines the start and end dates based on `timeRange` (Week, Month, Year).
+    /// 2. Fetches transactions within that range from SwiftData.
+    /// 3. Filters only `.expense` type transactions.
+    /// 4. Calculates `totalSpent`.
+    /// 5. Calls `processChartData` to generate bar chart data.
+    /// 6. Calls `processCategoryData` to generate donut chart data.
+    ///
+    /// - Parameter context: The SwiftData model context.
     @MainActor
     func fetchData(context: ModelContext) {
         var startDate: Date
@@ -88,6 +105,11 @@ class ReportViewModel {
         }
     }
     
+    /// Aggregates expense data into time buckets for the bar chart.
+    ///
+    /// - **Week:** buckets by Day (Mon, Tue...).
+    /// - **Month:** buckets by Week (1-7, 8-14...).
+    /// - **Year:** buckets by Month (Jan, Feb...).
     private func processChartData(expenses: [Transaction], range: TimeRange, startDate: Date, endDate: Date) {
         let calendar = Calendar.current
         var data: [ChartData] = []
@@ -154,6 +176,12 @@ class ReportViewModel {
         self.averageSpent = data.isEmpty ? 0 : (totalSpent / Double(data.count))
     }
     
+    /// Aggregates expenses by category for the donut chart.
+    ///
+    /// This method groups expenses by their category, sums the amounts, and calculates the percentage
+    /// of each category relative to the total expenditure.
+    ///
+    /// - Parameter expenses: The list of expense transactions to process.
     private func processCategoryData(expenses: [Transaction]) {
         guard totalSpent > 0 else {
             self.categoryData = []
@@ -174,17 +202,5 @@ class ReportViewModel {
             )
         }
         .sorted { $0.amount > $1.amount }
-    }
-    
-    func getComparisonText(for item: ChartData) -> String? {
-        guard timeRange == .year else { return nil }
-        let calendar = Calendar.current
-        guard let prevDate = calendar.date(byAdding: .month, value: -1, to: item.date),
-                let prevItem = chartData.first(where: { calendar.isDate($0.date, equalTo: prevDate, toGranularity: .month) }) else { return nil }
-        if prevItem.amount == 0 { return item.amount > 0 ? "+100%" : "0%" }
-        let diff = (item.amount - prevItem.amount) / prevItem.amount
-        let percentage = diff * 100
-        let sign = diff > 0 ? "+" : ""
-        return "\(sign)\(String(format: "%.1f", percentage))%"
     }
 }

@@ -34,6 +34,7 @@ enum TimeFilterOption: Equatable, Hashable {
     }
 }
 
+/// Configuration struct representing the current active filters for the transaction list.
 struct TransactionFilterConfig: Equatable {
     var timeOption: TimeFilterOption = .all
     // all nil value below mean all cases
@@ -46,12 +47,17 @@ struct TransactionFilterConfig: Equatable {
     }
 }
 
+/// The ViewModel responsible for managing, filtering, and searching transactions.
 @Observable
 class TransactionListViewModel {
     var searchText: String = ""
     
     var activeFilter: TransactionFilterConfig = TransactionFilterConfig()
     
+    
+    /// Generates a list of available months for the time filter.
+    ///
+    /// - Returns: An array of `TimeFilterOption` representing the last 12 months from the current date.
     var availableMonths: [TimeFilterOption] {
         var options: [TimeFilterOption] = []
         let calendar = Calendar.current
@@ -67,6 +73,16 @@ class TransactionListViewModel {
         return options
     }
     
+    /// Groups and filters transactions for display in the list.
+    ///
+    /// This function applies two layers of filtering:
+    /// 1. **Search Text:** Matches against the transaction note or category name (case-insensitive).
+    /// 2. **Active Filters:** Applies the criteria defined in `activeFilter` (Time, Wallet, Type, Category).
+    ///
+    /// After filtering, it groups the transactions by day (ignoring time) for sectioned display.
+    ///
+    /// - Parameter transactions: The raw list of transactions fetched from SwiftData.
+    /// - Returns: An array of tuples, where each tuple contains a `Date` (start of day) and the list of `Transaction`s for that day.
     func groupTransactions(_ transactions: [Transaction]) ->[(Date, [Transaction])] {
         let filteredTransaction = transactions.filter { transaction in
             let matchesSearch: Bool
@@ -90,6 +106,7 @@ class TransactionListViewModel {
         return groupedTransaction.sorted { $0.key > $1.key }
     }
     
+    /// Internal helper to check if a single transaction matches the active filter configuration.
     private func applyFilter(transaction: Transaction) -> Bool {
         // Check time
         if case .specificMonth(let date, _) = activeFilter.timeOption {
@@ -116,7 +133,7 @@ class TransactionListViewModel {
         
         // Check Category
         if let filterCategory = activeFilter.selectedCategory {
-            if transaction.category !== filterCategory {
+            if transaction.category != filterCategory {
                 return false
             }
         }
@@ -124,6 +141,15 @@ class TransactionListViewModel {
         return true
     }
     
+    /// Calculates the net total amount for a specific list of transactions.
+    ///
+    /// Logic:
+    /// - **Income:** Adds to the total.
+    /// - **Expense:** Subtracts from the total.
+    /// - **Transfer:** Ignored (returns the current result unchanged), as it doesn't affect the net daily cash flow in this context.
+    ///
+    /// - Parameter transactions: The list of transactions to calculate.
+    /// - Returns: The calculated net total.
     func calculateDailyTotal(for transactions: [Transaction]) -> Double {
         transactions.reduce(0) { result, transaction in
             let amount = transaction.amount

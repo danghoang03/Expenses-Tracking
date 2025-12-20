@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		893FBC932EF6B1E40081BEF5 /* Expenses-Tracking.docc in Sources */ = {isa = PBXBuildFile; fileRef = 893FBC922EF6B1E40081BEF5 /* Expenses-Tracking.docc */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		893FBC922EF6B1E40081BEF5 /* Expenses-Tracking.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = "Expenses-Tracking.docc"; sourceTree = "<group>"; };
 		899DAEB62EE9CEF500C5F566 /* Expenses-Tracking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expenses-Tracking.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -14,6 +19,7 @@
 		896BE12B2EF3DBC800A1C692 /* Exceptions for "Expenses-Tracking" folder in "Expenses-Tracking" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Configurations/Secrets.xcconfig,
 				Info.plist,
 			);
 			target = 899DAEB52EE9CEF500C5F566 /* Expenses-Tracking */;
@@ -45,6 +51,7 @@
 		899DAEAD2EE9CEF500C5F566 = {
 			isa = PBXGroup;
 			children = (
+				893FBC922EF6B1E40081BEF5 /* Expenses-Tracking.docc */,
 				899DAEB82EE9CEF500C5F566 /* Expenses-Tracking */,
 				899DAEB72EE9CEF500C5F566 /* Products */,
 			);
@@ -132,6 +139,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				893FBC932EF6B1E40081BEF5 /* Expenses-Tracking.docc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

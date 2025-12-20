@@ -8,18 +8,28 @@
 import Foundation
 import Observation
 
+/// Manages currency conversion logic and state.
 @Observable
 class CurrencyViewModel {
     private let service: CurrencyServiceProtocol
     
+    /// The currently selected foreign currency. Defaults to VND (Local).
     var selectedCurrency: Currency = .vnd
+    /// The amount entered in the foreign currency.
     var foreignAmount: Double = 0
+    /// The current exchange rate (1 Unit of Foreign Currency = X VND).
     var exchangeRate: Double = 0
+    /// Timestamp of the last successful rate fetch.
     var lastUpdated: Date?
+    /// Indicates if a network request is in progress.
     var isLoading: Bool = false
+    /// Stores error messages from the API service.
     var errorMessage: String?
+    /// Flag indicating if the user is manually overriding the exchange rate.
     var isManualRate: Bool = false
     
+    /// The calculated amount in VND.
+    /// Returns `foreignAmount` directly if currency is VND, otherwise `foreignAmount * exchangeRate`.
     var finalVNDAmount: Double {
         if selectedCurrency == .vnd {
             return foreignAmount
@@ -31,6 +41,9 @@ class CurrencyViewModel {
         self.service = service
     }
     
+    /// Fetches the latest exchange rate from the service.
+    ///
+    /// Skips fetching if the selected currency is VND or if the user is in manual rate mode.
     @MainActor
     func fetchRate() async {
         guard selectedCurrency != .vnd else { return }

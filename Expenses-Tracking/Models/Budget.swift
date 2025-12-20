@@ -8,11 +8,17 @@
 import Foundation
 import SwiftData
 
+/// Represents a monthly spending limit for a specific category.
 @Model
 final class Budget: Hashable {
+    /// The maximum amount allowed to be spent for the linked category.
     var limit: Double
+    
+    /// The timestamp when this budget was created.
     var createdAt: Date
     
+    /// The category associated with this budget.
+    /// A category can only have one active budget per month logic (though the model allows 1-1 relationship).
     var category: Category?
     
     init(limit: Double, category: Category) {

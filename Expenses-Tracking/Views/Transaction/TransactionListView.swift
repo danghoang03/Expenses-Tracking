@@ -13,6 +13,16 @@ enum TransactionRoute: Hashable {
     case detail(Transaction)
 }
 
+/// A view that displays a comprehensive list of financial transactions.
+///
+/// ``TransactionListView`` acts as the historical record of the application.
+/// It supports:
+/// - Viewing transactions grouped by day.
+/// - Searching transactions by note or category.
+/// - Filtering by Date, Wallet, Type, or Category via ``TransactionFilterView``.
+/// - Navigation to ``TransactionDetailView``.
+///
+/// The view uses `TransactionListViewModel` to handle the data manipulation logic.
 struct TransactionListView: View {
     @Environment(\.modelContext) private var modelContext
     

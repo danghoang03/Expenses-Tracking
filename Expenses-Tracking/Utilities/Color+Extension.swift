@@ -7,7 +7,18 @@
 
 import SwiftUI
 
+/// Extensions allowing `Color` initialization from Hex strings.
+///
+/// Since SwiftData cannot store `Color` objects directly, these extensions are critical
+/// for converting UI colors to Hex strings for storage and converting them back for display.
 extension Color {
+    /// Initializes a Color from a HEX string.
+    ///
+    /// Supported formats:
+    /// - `#RRGGBB` (e.g. "#FF0000")
+    /// - `RRGGBB` (e.g. "FF0000")
+    ///
+    /// - Parameter hex: The hexadecimal string representation of the color.
     init(hex: String) {
         var cleanHex = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         if cleanHex.hasPrefix("#") {
@@ -24,6 +35,10 @@ extension Color {
         self.init(red: redValue, green: greenValue, blue: blueValue)
     }
     
+    /// Converts the Color to a HEX string.
+    ///
+    /// - Returns: A string in the format `#RRGGBB` (e.g. "#2ECC71").
+    ///            Returns `#000000` (Black) if conversion fails.
     func toHex() -> String {
         let uic = UIColor(self)
         guard let components = uic.cgColor.components, components.count >= 3 else {

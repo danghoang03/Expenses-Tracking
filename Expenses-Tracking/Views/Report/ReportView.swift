@@ -117,6 +117,7 @@ extension ReportView {
                 }
                 .frame(height: 200)
                 .chartXAxis {
+                    // Custom Axis: Only show labels for data points that exist in the visible range
                     AxisMarks(values: viewModel.chartData.map { $0.date }) { value in
                         if let date = value.as(Date.self),
                             let item = viewModel.chartData.first(where: { Calendar.current.isDate($0.date, inSameDayAs: date) }) {
@@ -135,6 +136,8 @@ extension ReportView {
                 }
                 .chartYScale(domain: 0...(viewModel.maxChartAmount * 1.2))
                 .chartGesture { proxy in
+                    // Interaction Logic: Handle tap gesture to select a specific bar
+                    // We map the tap location (x, y) to a specific Date value on the X-axis
                     SpatialTapGesture().onEnded { value in
                         if let date = proxy.value(atX: value.location.x, as: Date.self) {
                             selectedBarDate = date
@@ -269,13 +272,14 @@ extension ReportView {
                 .opacity(selectedCategoryName == nil ? 1.0 : (selectedCategoryName == item.categoryName ? 1.0 : 0.3))
             }
             .frame(height: 300)
-            .chartLegend(.hidden)
+            .chartLegend(.hidden) // Hide default legend to use our custom Detailed Legend list below
             .chartForegroundStyleScale(
                 domain: viewModel.categoryData.map(\.categoryName),
                 range: viewModel.categoryData.map { Color(hex: $0.colorHex) }
             )
             .chartAngleSelection(value: $selectedCategoryName)
             .chartBackground { proxy in
+                // Visual Logic: Use GeometryReader to position the summary text EXACTLY in the center of the donut hole
                 GeometryReader { geo in
                     if let plotFrame = proxy.plotFrame {
                         let frame = geo[plotFrame]

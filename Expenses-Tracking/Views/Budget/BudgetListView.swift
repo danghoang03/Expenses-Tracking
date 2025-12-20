@@ -8,6 +8,15 @@
 import SwiftUI
 import SwiftData
 
+/// A view that lists all active budgets and their current status.
+///
+/// ``BudgetListView`` visualizes the user's spending limits.
+/// Each row in the list displays:
+/// - The category name.
+/// - The limit vs. spent amount.
+/// - A progress bar that changes color based on usage (Blue -> Orange -> Red).
+///
+/// It uses ``BudgetViewModel`` to perform the heavy lifting of calculating totals.
 struct BudgetListView: View {
     @Environment(\.modelContext) private var modelContext
     

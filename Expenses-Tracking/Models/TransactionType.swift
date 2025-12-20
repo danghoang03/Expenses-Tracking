@@ -8,9 +8,13 @@
 import Foundation
 import SwiftUI
 
+/// Enumeration representing the possible types of a financial transaction.
 enum TransactionType: String, Codable, CaseIterable, Identifiable {
+    /// Represents money coming into a wallet (e.g. Salary, Bonus).
     case income = "Income"
+    /// Represents money going out of a wallet (e.g. Food, Shopping).
     case expense = "Expense"
+    /// Represents moving money between two wallets.
     case transfer = "Transfer"
     
     var id: String { self.rawValue }

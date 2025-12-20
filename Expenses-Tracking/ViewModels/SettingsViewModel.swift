@@ -9,8 +9,10 @@ import Observation
 import SwiftUI
 import UserNotifications
 
+/// Manages user preferences and application settings.
 @Observable
 class SettingsViewModel {
+    /// Enumeration defining the navigation destinations within Settings.
     enum Route: Hashable, CaseIterable {
         case wallets
         case categories
@@ -32,12 +34,16 @@ class SettingsViewModel {
     
     var menuItems: [Route] = Route.allCases
     
+    /// Toggle state for daily reminders.
+    /// Changing this value triggers `handleToggleChange()`.
     var isReminderEnabled: Bool {
         didSet {
             handleToggleChange()
         }
     }
     
+    /// The time set for the daily reminder.
+    /// Updates are saved immediately and the notification is rescheduled.
     var reminderTime: Date {
         didSet {
             if isReminderEnabled {
@@ -49,6 +55,7 @@ class SettingsViewModel {
     
     var showPermissionAlert: Bool = false
     
+    /// Initializes the ViewModel by loading preferences from UserDefaults.
     init() {
         self.isReminderEnabled = UserDefaults.standard.bool(forKey: "isReminderEnabled")
         if let savedDate = UserDefaults.standard.object(forKey: "reminderTime") as? Date {
@@ -61,6 +68,10 @@ class SettingsViewModel {
         }
     }
     
+    /// Handles the logic when the reminder toggle is switched.
+    ///
+    /// - If Enabled: Requests notification permission. If granted, schedules the reminder. If denied, shows alert.
+    /// - If Disabled: Cancels all pending notifications.
     private func handleToggleChange() {
         saveSettings()
         

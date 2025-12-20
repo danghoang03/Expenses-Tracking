@@ -28,10 +28,22 @@ struct ExchangeRateResponse: Codable {
     let time_last_update_unix: TimeInterval
 }
 
+/// A service responsible for fetching and caching currency exchange rates.
+///
+/// This service connects to the ExchangeRate - API to retrieve the latest rates.
+/// It implements a caching mechanism using `UserDefaults` to minimize network calls and API usage.
 protocol CurrencyServiceProtocol {
+    /// Fetches the exchange rate between two currencies.
+    ///
+    /// - Parameters:
+    ///    - source: The currency code to convert from (e.g.  "VND").
+    ///    - target: The currency code to convert to (e.g. "USD).
+    /// - Returns: A tuple containing the `rate` (Double) and the `lastUpdated` (Date) timestamp.
+    /// - Throws: `URLError` if the network request fails or decoding errors if the API response is invalid
     func fetchRate(from source: String, to target: String) async throws -> (rate: Double, lastUpdated: Date)
 }
 
+/// The concrete implementation of `CurrencyServiceProtocol`.
 struct CurrencyService: CurrencyServiceProtocol {
     private let session: URLSession
     private let defaults: UserDefaults
@@ -51,6 +63,21 @@ struct CurrencyService: CurrencyServiceProtocol {
         self.defaults = defaults
     }
     
+    /// Fetches the exchange rate from the API or local cache.
+    ///
+    /// **Caching Strategy:**
+    /// 1.  Checks `UserDefaults` for a saved rate using the key `CurrencyRate_{source}_{target}`.
+    /// 2. Verifies if the cached data is fresh (less than `cacheValidityDuration` = 24 hours).
+    /// 3. If valid, returns the cached rate immediately (Offline-first approach).
+    /// 4. If expired or missing, executes a network request to `exchangerate-api.com`.
+    /// 5. On success, updates the cache with the new rate and timestamp.
+    ///
+    ///  - Parameters:
+    ///     - source: The 3-letter currency code (ISO 4217) for the source currency.
+    ///     - target: The 3-letter currency code (ISO 4217) for the target currency.
+    ///  - Returns: The conversion rate and the timestamp of the data.
+    ///  - Throws: `URLError.badURL` if the API key is missing or URL is invalid.
+    ///  - Throws: `URLError.badServerResponse` if the API returns a non-200 status code.
     func fetchRate(from source: String, to target: String) async throws -> (rate: Double, lastUpdated: Date) {
         let rateKey = "CurrencyRate_\(source)_\(target)"
         let dateKey = "CurrencyDate_\(source)_\(target)"

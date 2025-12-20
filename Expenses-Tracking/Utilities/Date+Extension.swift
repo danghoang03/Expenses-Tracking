@@ -7,6 +7,10 @@
 
 import Foundation
 
+/// Extensions providing helper properties for date manipulation.
+///
+/// These extensions simplify finding the start/end of weeks, months, and years,
+/// which is essential for grouping transactions and generating report charts.
 extension Date {
     
     private var calendar: Calendar {

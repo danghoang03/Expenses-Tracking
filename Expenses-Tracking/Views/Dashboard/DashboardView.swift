@@ -8,6 +8,15 @@
 import SwiftUI
 import SwiftData
 
+/// The main landing view of the application.
+///
+/// ``DashboardView`` provides a high-level summary of the user's financial status.
+/// It is composed of several key components:
+/// - **Overview Card**: Shows total balance and monthly stats.
+/// - **Wallet List**: A horizontal scroll view of all wallets.
+/// - **Recent Transactions**: A quick list of the latest activities.
+///
+/// This view relies on ``DashboardViewModel`` to fetch and aggregate data from SwiftData.
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
     

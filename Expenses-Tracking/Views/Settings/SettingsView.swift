@@ -8,6 +8,14 @@
 import SwiftUI
 import SwiftData
 
+/// The configuration screen of the application.
+///
+/// ``SettingsView`` serves as the hub for:
+/// - Managing Master Data (Wallets, Categories).
+/// - Configuring Notifications (Daily Reminders).
+/// - Data Management (Export CSV).
+///
+/// It uses a path-based navigation stack managed by ``SettingsViewModel``.
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = SettingsViewModel()

@@ -99,9 +99,14 @@ extension BudgetDetailView {
         Section {
             VStack(spacing: 16) {
                 ZStack {
+                    // Background Circle (Gray track)
                     Circle()
                         .stroke(Color(uiColor: .systemGray5), lineWidth: 20)
                     
+                    // Foreground Circle (Progress indicator)
+                    // Visual Logic:
+                    // 1. trim(from: 0, to: progress): Draws only the percentage segment corresponding to usage.
+                    // 2. rotationEffect(-90): Rotates the circle counter-clockwise so the drawing starts from top (12 o'clock).
                     Circle()
                         .trim(from: 0, to: progress)
                         .stroke(
