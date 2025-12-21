@@ -18,7 +18,9 @@
 * **Data Management**: Manage multiple wallets, custom categories, and **Export data to CSV** for external analysis.
 * **Local Notifications**: Daily reminders to encourage habit-forming tracking.
 
-## 🎥 Demo
+## 🎥 Video Demo
+
+https://github.com/user-attachments/assets/8a501462-7e24-4ae5-aaaf-c3b77b889d9b
 
 ## 📸 Screenshots
 
