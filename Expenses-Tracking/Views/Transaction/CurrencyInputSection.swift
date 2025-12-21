@@ -11,6 +11,8 @@ import SwiftData
 struct CurrencyInputSection: View {
     @Bindable var viewModel: CurrencyViewModel
     
+    var isFocused: FocusState<Bool>.Binding
+    
     var body: some View {
         Section {
             VStack(spacing: 16) {
@@ -80,6 +82,7 @@ extension CurrencyInputSection {
                 .multilineTextAlignment(.trailing)
                 .minimumScaleFactor(0.5)
                 .contentTransition(.numericText())
+                .focused(isFocused)
                     
             if viewModel.selectedCurrency != .vnd {
                 Text(viewModel.selectedCurrency.name)
@@ -161,6 +164,7 @@ extension CurrencyInputSection {
 }
 
 #Preview {
-    CurrencyInputSection(viewModel: CurrencyViewModel(service: MockCurrencyService()))
+    @FocusState var focus: Bool
+    return CurrencyInputSection(viewModel: CurrencyViewModel(service: MockCurrencyService()), isFocused: $focus)
         .padding()
 }

@@ -38,7 +38,7 @@ struct AddTransactionView: View {
     var body: some View {
         NavigationStack {
             Form {
-                CurrencyInputSection(viewModel: currencyViewModel)
+                CurrencyInputSection(viewModel: currencyViewModel, isFocused: $isAmountFocused)
                 infoSection
                 categorySection
                 walletSection
