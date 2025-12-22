@@ -20,7 +20,7 @@
 
 ## 🎥 Video Demo
 
-https://github.com/user-attachments/assets/8a501462-7e24-4ae5-aaaf-c3b77b889d9b
+[![Demo App Quản lý tài chính cá nhân](https://img.youtube.com/vi/wlmgKt66D-8/0.jpg)](https://www.youtube.com/watch?v=wlmgKt66D-8)
 
 ## 📸 Screenshots
 
